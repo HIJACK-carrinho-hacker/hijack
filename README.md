@@ -38,7 +38,7 @@ Abra o endereço impresso no terminal (`http://<IP-do-notebook>:3000`). Detalhes
 
 1. **Servidor:** siga o passo acima no notebook. Anote o IP e os valores de `DEVICE_SECRET_CAR_A` / `_B` em `web/apps/server/.env`.
 2. **Montagem:** faça as ligações da seção 3 de `esp32/README.md` (L298N nos GPIOs 14, 27, 26, 25, 33 e 32; retire os jumpers ENA/ENB; GND comum; servo com alimentação própria).
-3. **Firmware:** em `esp32/`, crie `include/secrets.h` (Wi-Fi 2,4 GHz, IP do notebook, `car-a`/`car-b`, segredo do servidor) e grave com as saídas desligadas: `pio run -e esp32dev -t upload`.
+3. **Firmware:** em `esp32/`, grave com as saídas desligadas (`pio run -e esp32dev -t upload`). Pelo celular, entre na rede `HIJACK-…` que o carrinho cria e configure no portal a Wi-Fi do laboratório (2,4 GHz), o IP do notebook, `car-a`/`car-b` e o segredo do servidor (`esp32/README.md`, seção 5).
 4. **Conferir:** monitor serial mostra `[ws] autenticado`; no `/admin`, troque o carrinho para **Hardware** e veja **online**.
 5. **Calibrar e ligar as saídas:** pino e pulsos do servo, sentido dos motores, velocidade (`esp32/README.md`, seção 8), com o carrinho **suspenso**.
 
