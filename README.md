@@ -41,6 +41,7 @@ Abra o endereço impresso no terminal (`http://<IP-do-notebook>:3000`). Detalhes
 3. **Firmware:** em `esp32/`, grave com as saídas desligadas (`pio run -e esp32dev -t upload`). Pelo celular, entre na rede `HIJACK-…` que o carrinho cria e configure no portal a Wi-Fi do laboratório (2,4 GHz), o IP do notebook, `car-a`/`car-b` e o segredo do servidor (`esp32/README.md`, seção 5).
 4. **Conferir:** monitor serial mostra `[ws] autenticado`; no `/admin`, troque o carrinho para **Hardware** e veja **online**.
 5. **Calibrar e ligar as saídas:** pino e pulsos do servo, sentido dos motores, velocidade (`esp32/README.md`, seção 8), com o carrinho **suspenso**.
+6. **Rede e bancada:** para a demonstração use roteador dedicado de 2,4 GHz e o ESP32 perto dele. A ordem prática dos testes de hardware, conforme o material chega, está em `esp32/docs/proximos-passos-hardware.md`.
 
 ## Convenções
 
