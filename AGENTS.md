@@ -5,7 +5,7 @@ Este diretório é o repositório `HIJACK-carrinho-hacker/hijack` (só documenta
 - `web/` — `HIJACK-carrinho-hacker/hijack-web`: monorepo Bun (frontend React, backend Express+WS, pacote `protocol`). Leia `web/AGENTS.md`.
 - `esp32/` — `HIJACK-carrinho-hacker/hijack-esp32`: firmware PlatformIO + Arduino para ESP32-WROOM-32 DevKit 38 pinos. Leia `esp32/AGENTS.md`.
 
-Fonte de verdade da especificação: `web/docs/PLANO_IMPLEMENTACAO_HIJACK.md`.
+Fonte de verdade da especificação: `web/docs/PLANO_IMPLEMENTACAO_HIJACK.md` (software) e `esp32/docs/especificacao/` (carrinho físico, versão de 10/11/2026 — prevalece sobre o plano mestre em pinos, direção proporcional, failsafe e topologia de 1 carrinho).
 Estado atual e próximo passo: `web/docs/progress.md` (e `esp32/docs/progress.md`).
 Decisões e premissas: `web/docs/assumptions.md`.
 
