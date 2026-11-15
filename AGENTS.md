@@ -10,6 +10,8 @@ Estado atual e próximo passo: `web/docs/progress.md` (e `esp32/docs/progress.md
 Decisões e premissas: `web/docs/assumptions.md`.
 Estado em 14/11/2026: software e firmware validados com o ESP32 real; a bancada física (L298N, dois motores TT soltos e servo solto) foi energizada e testada com o `esp32dev_hw`; **nada foi testado no chassi nem no chão**. Rede da apresentação: hotspot do celular em 2,4 GHz (30 min sem apagão; a mesh da casa tinha apagões a cada ≈ 5 min). Lições da bancada em `esp32/docs/proximos-passos-hardware.md` (GND dedicado do ESP no USB, PWM máximo de 80 %, serial reinicia a placa). Em 15/11/2026 o 5 V do regulador chega ao ESP com queda de ≈ 0,5 V (4,99 V no regulador, 4,5 a 4,6 V nos pinos do ESP, sob carga) por contatos de protoboard e jumpers; a ligação será refeita com fios curtos e grossos e medida de novo.
 
+Em 15/11/2026 o hacker ganhou dez ataques novos simulados no servidor (viés, travar direção, atraso, perda, replay, interceptar, quebra de senha, link derrubado, telemetria falsa e sequestro) e a 4ª defesa (criptografia simulada); o firmware não mudou. Decisões em `web/docs/assumptions.md` seção 7. O ESP32 está com o `esp32dev` (saídas desligadas) desde 15/11/2026.
+
 Guia de uso para pessoas: `README.md` (raiz), `web/README.md`, `esp32/README.md`.
 
 Regras gerais:
