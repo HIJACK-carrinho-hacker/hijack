@@ -8,6 +8,7 @@ Este diretório é o repositório `HIJACK-carrinho-hacker/hijack` (só documenta
 Fonte de verdade da especificação: `web/docs/PLANO_IMPLEMENTACAO_HIJACK.md` (software) e `esp32/docs/especificacao/` (carrinho físico, versão de 10/11/2026 — prevalece sobre o plano mestre em pinos, direção proporcional, failsafe e topologia de 1 carrinho).
 Estado atual e próximo passo: `web/docs/progress.md` (e `esp32/docs/progress.md`). Plano de bancada por módulo: `esp32/docs/proximos-passos-hardware.md`.
 Decisões e premissas: `web/docs/assumptions.md`.
+Estado em 14/11/2026: software e firmware validados com o ESP32 real; a bancada física (L298N, dois motores TT soltos e servo solto) foi energizada e testada com o `esp32dev_hw`; **nada foi testado no chassi nem no chão**. Rede da apresentação: hotspot do celular em 2,4 GHz (30 min sem apagão; a mesh da casa tinha apagões a cada ≈ 5 min). Lições da bancada em `esp32/docs/proximos-passos-hardware.md` (GND dedicado do ESP no USB, PWM máximo de 80 %, serial reinicia a placa).
 
 Guia de uso para pessoas: `README.md` (raiz), `web/README.md`, `esp32/README.md`.
 
