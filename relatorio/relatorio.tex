@@ -147,7 +147,7 @@ Os casos mostram três tendências que o HIJACK procura ensinar: (i) a IA reduz 
 
 \chapter{Metodologia}
 
-O trabalho foi feito de forma incremental, em etapas pequenas e verificáveis, cada uma encerrada com testes e registro em \texttt{docs/progress.md}:
+O trabalho foi feito de forma incremental, em etapas pequenas e verificáveis, cada uma encerrada com testes e com o registro do que foi feito, do que foi verificado e do que ficou pendente:
 
 \begin{enumerate}
   \item \textbf{Especificação}: plano de implementação com escopo, contratos de mensagens, regras de segurança e critérios de aceite; especificação física do carrinho (pinos, alimentação, direção e tração).
@@ -165,7 +165,7 @@ Por segurança, o projeto adota três regras: nenhuma varredura ou exploração 
 
 \section{Arquitetura}
 
-O sistema tem três partes, mantidas em repositórios separados:
+O sistema tem três partes:
 
 \begin{itemize}
   \item \textbf{Carrinho}: ESP32-WROOM-32 (DevKit de 38 pinos), ponte H L298N com dois motores TT para tração traseira, servo SG90 para a direção dianteira, regulador de 5~V e duas baterias 18650. Chassi impresso em 3D.
