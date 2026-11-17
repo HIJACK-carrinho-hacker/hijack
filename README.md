@@ -45,6 +45,16 @@ No painel do hacker (`/hacker`), os 12 controles de ataque e as 4 defesas têm u
 5. **Calibrar e ligar as saídas:** pino e pulsos do servo, sentido dos motores, velocidade (`esp32/README.md`, seção 8), com o carrinho **suspenso**.
 6. **Rede e bancada:** para a demonstração use roteador dedicado de 2,4 GHz e o ESP32 perto dele. A ordem prática dos testes de hardware, conforme o material chega, está em `esp32/docs/proximos-passos-hardware.md`.
 
+## Relatório final
+
+O relatório da disciplina (UFRN, Fundamentos de Circuitos e Sistemas Controlados) está em `relatorio/`: fonte LaTeX no modelo ABNT `abntex2` (`relatorio.tex`), referências (`referencias.bib`), imagens do modelo 3D (`figuras/`) e o PDF pronto (`relatorio.pdf`).
+
+Para compilar é preciso o TeX Live com o `abntex2` (no Arch: `sudo pacman -S texlive-publishers`). Dentro de `relatorio/`:
+
+```bash
+pdflatex relatorio && bibtex relatorio && pdflatex relatorio && pdflatex relatorio
+```
+
 ## Convenções
 
 Leia `AGENTS.md` (regras para quem continuar o projeto, inclusive agentes de IA). Estado e pendências: `web/docs/progress.md` e `web/docs/acceptance.md`.
