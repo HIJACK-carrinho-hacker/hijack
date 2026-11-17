@@ -34,6 +34,8 @@ bun run demo
 
 Abra o endereço impresso no terminal (`http://<IP-do-notebook>:3000`). Detalhes e páginas em `web/README.md`.
 
+No painel do hacker (`/hacker`), os 12 controles de ataque e as 4 defesas têm um ícone de informação. Passe o mouse, clique ou toque para ver **Na vida real** (o cenário de segurança) e **No HIJACK** (o comportamento e os limites da demonstração). As explicações também abrem por teclado e não ensinam a executar ataques. O roteiro para apresentar esses exemplos está em `web/docs/demo-script.md`.
+
 ## Rodar com os carrinhos reais
 
 1. **Servidor:** siga o passo acima no notebook. Anote o IP e os valores de `DEVICE_SECRET_CAR_A` / `_B` em `web/apps/server/.env`.
