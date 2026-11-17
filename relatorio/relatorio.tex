@@ -10,6 +10,8 @@
 \usepackage{enumitem}
 \usepackage{csquotes}
 \usepackage{xurl}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta}
 \usepackage{hyperref}
 \usepackage[alf]{abntex2cite}
 
@@ -58,6 +60,10 @@ O HIJACK é uma demonstração didática de cibersegurança em que um carrinho c
 
 \textbf{Palavras-chave}: cibersegurança. sistemas ciberfísicos. IoT. inteligência artificial. ESP32. ensino.
 \end{resumo}
+
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures*
+\cleardoublepage
 
 \pdfbookmark[0]{\listtablename}{lot}
 \listoftables*
@@ -161,27 +167,89 @@ O desenvolvimento usou assistentes de programação com IA (Claude Code e Codex)
 
 Por segurança, o projeto adota três regras: nenhuma varredura ou exploração de rede real (os ataques são simulados no servidor); rede local isolada; e parada segura do carrinho que nenhum ataque consegue desligar.
 
-\chapter{Desenvolvimento}
+\chapter{O jogo HIJACK}\label{cap:jogo}
 
-\section{Arquitetura}
+\section{Intuito}
 
-O sistema tem três partes:
+O HIJACK é apresentado como um jogo de ataque e defesa. Um piloto dirige o carrinho pelo celular enquanto um hacker tenta tirar o controle dele e outro hacker tenta devolvê-lo. Não há pontuação, vencedor nem limite de tempo: o objetivo é que jogadores e público vejam, no carrinho real e no telão, o efeito de cada ataque e de cada defesa, e liguem isso aos casos reais do Capítulo~\ref{cap:contexto}. Tudo acontece numa rede local isolada, e os ataques são simulados dentro do próprio sistema, sem invadir nenhum equipamento de verdade.
+
+\section{Papéis}
 
 \begin{itemize}
-  \item \textbf{Carrinho}: ESP32-WROOM-32 (DevKit de 38 pinos), ponte H L298N com dois motores TT para tração traseira, servo SG90 para a direção dianteira, regulador de 5~V e duas baterias 18650. Chassi impresso em 3D.
-  \item \textbf{Firmware}: C++ com Arduino e PlatformIO; configuração de Wi-Fi pelo portal WiFiManager; rede em tarefa separada do controle; parada automática se nenhum comando novo chegar em 400~ms.
-  \item \textbf{Aplicação web}: servidor em Bun, Express e WebSocket; telas em React, Vite, TypeScript, Tailwind e shadcn/ui; mensagens validadas com Zod. Há telas para o piloto (joystick no celular), o hacker (painel de ataque e defesa), o operador e um simulador.
+  \item \textbf{Piloto}: dirige o carrinho por um joystick virtual no celular. Controla frente e ré em velocidade fixa e a direção de forma proporcional (quanto mais o dedo vai para o lado, mais as rodas esterçam).
+  \item \textbf{Hacker de ataque}: num notebook, segue as etapas de invasão e liga os ataques contra o carrinho da equipe adversária.
+  \item \textbf{Hacker de defesa}: num notebook, liga as camadas de defesa do carrinho da própria equipe.
+  \item \textbf{Operador}: conduz a partida (iniciar, pausar, encerrar), escolhe se o carrinho é real ou simulado, pode parar todos os carros a qualquer momento e consulta as métricas no fim.
+  \item \textbf{Público}: acompanha pelo telão, que mostra o carrinho e compara o comando pedido pelo piloto com o comando que o carrinho realmente recebeu.
 \end{itemize}
 
-O navegador nunca fala direto com o carrinho. O comando do piloto vai ao servidor, passa pelo \emph{pipeline} de ataques e defesas e só então é enviado ao ESP32. O servidor é a única autoridade sobre equipes, sessões e permissões.
+\section{Modalidades}
 
-\section{Dinâmica da demonstração}
+\begin{itemize}
+  \item \textbf{Um carrinho (padrão)}: exige no mínimo três jogadores. A equipe A tem o piloto e o hacker de defesa; a equipe B tem só o hacker de ataque.
+  \item \textbf{Dois carrinhos}: duas equipes completas, cada uma com piloto e hacker, totalizando quatro jogadores. Cada hacker ataca o carrinho adversário e defende o próprio.
+\end{itemize}
 
-Na configuração padrão há um carrinho e duas equipes. A equipe A tem um piloto e um hacker defensor; a equipe B tem um hacker atacante. O atacante passa por quatro etapas guiadas (escanear, localizar, explorar e escolher o ataque) e então pode ativar os ataques. O defensor responde ativando as defesas.
+Cada jogador entra pelo navegador escolhendo papel e equipe e digitando a senha do carrinho, que começa propositalmente como \texttt{1234}. O servidor garante uma vaga por papel: um segundo piloto não consegue tomar o carrinho de quem já está dirigindo.
 
-\section{Ataques, defesas e casos reais}
+\section{Como se joga}
 
-A Tabela~\ref{tab:ataques} relaciona os 12 controles de ataque do painel às defesas e aos casos do Capítulo~\ref{cap:contexto}. Na interface, cada controle tem um ícone de informação com dois textos: \enquote{Na vida real} e \enquote{No HIJACK}, sem instruções de como executar ataques.
+\begin{enumerate}
+  \item \textbf{Largada}: o operador inicia a partida e o piloto dirige livremente. Ao soltar o joystick, o carrinho para.
+  \item \textbf{Invasão em etapas}: o hacker de ataque passa por quatro etapas guiadas: escanear a rede (lista só os carrinhos cadastrados no jogo), identificar o adversário, explorar a vulnerabilidade (o relatório mostra a senha padrão e a falta de verificação de integridade) e modificar comandos. Só depois disso os ataques são liberados.
+  \item \textbf{Ataque}: o atacante liga os ataques da Tabela~\ref{tab:ataques-jogo}. O piloto percebe pelo comportamento do carrinho; o telão mostra \enquote{comando alterado no caminho}.
+  \item \textbf{Defesa}: o hacker de defesa liga as camadas da Tabela~\ref{tab:defesas}. Cada camada neutraliza um grupo de ataques, e o atacante recebe o aviso de que a alteração foi bloqueada.
+  \item \textbf{Encerramento}: o operador encerra e mostra as métricas: comandos recebidos, aplicados, alterados e bloqueados, paradas por falta de comando e tempo de resposta do carrinho.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ataques disponíveis para o hacker}
+\label{tab:ataques-jogo}
+\begin{tabularx}{\textwidth}{@{}P{2.4cm}P{4.2cm}L@{}}
+\toprule
+\textbf{Grupo} & \textbf{Ataque} & \textbf{Efeito no carrinho} \\
+\midrule
+Sabotagem & Inversão de frente/ré e de esquerda/direita & O piloto manda ir para a frente e o carro vai de ré, ou vira para o lado oposto \\
+ & Viés e travamento da direção & O carro puxa para um lado ou a direção fica presa \\
+ & Atraso e perda de pacotes & O carro responde atrasado ou engasga \\
+ & Replay & O carro repete o que o piloto fez alguns segundos antes \\
+Espionagem & Interceptar tráfego & O atacante lê os comandos do piloto em texto claro \\
+ & Quebra de senha & Uma lista de senhas comuns encontra a senha padrão \\
+Canal & Derrubar o link & O carro fica 5~s sem comandos e para sozinho \\
+ & Telemetria falsa & O defensor vê o carro obedecendo enquanto ele faz outra coisa \\
+Controle & Sequestro & O atacante passa a dirigir o carro e o piloto perde o controle \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
+\end{table}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Camadas de defesa}
+\label{tab:defesas}
+\begin{tabularx}{\textwidth}{@{}P{3.2cm}P{2.2cm}L@{}}
+\toprule
+\textbf{Defesa} & \textbf{Tipo} & \textbf{O que bloqueia} \\
+\midrule
+Troca da senha padrão & Real & Quebra de senha e sequestro. A senha antiga deixa de valer na hora e o piloto precisa entrar de novo \\
+Integridade & Simulada & Inversões, viés, travamento e telemetria falsa \\
+Proteção contra repetição & Simulada & Replay \\
+Criptografia & Simulada & Torna ilegível o tráfego interceptado \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
+\end{table}
+
+Atraso, perda de pacotes e queda do link não têm camada de defesa de propósito: mostram que disponibilidade é um problema à parte, e que o máximo que se pode garantir é que o carrinho pare em segurança. Um indicador de 0 a 4 mostra quantas camadas estão ligadas; ele conta camadas demonstradas e não mede segurança real. Uma lição importante do jogo é que trocar a senha não impede as inversões: a senha protege contra quem não tem acesso, mas não contra alterações feitas no caminho por um componente que já tem acesso.
+
+Cada controle de ataque e de defesa tem um ícone de informação com dois textos curtos: \enquote{Na vida real}, que descreve o cenário real, e \enquote{No HIJACK}, que explica o efeito e os limites da simulação. Os textos são conceituais e não ensinam a executar ataques.
+
+\section{Ataques do jogo e casos reais}
+
+A Tabela~\ref{tab:ataques} relaciona os ataques e as defesas do jogo aos casos do Capítulo~\ref{cap:contexto}.
 
 \begin{table}[htbp]
 \centering
@@ -192,24 +260,172 @@ A Tabela~\ref{tab:ataques} relaciona os 12 controles de ataque do painel às def
 \toprule
 \textbf{Ataque no HIJACK} & \textbf{Defesa no HIJACK} & \textbf{Relação com o mundo real} \\
 \midrule
-Quebra de senha e sequestro do controle & Troca da senha padrão \texttt{1234} (real, com hash argon2id) & Senhas fracas nos refrigeradores europeus; credenciais roubadas na Binance \\
-Inversão de frente/ré e de esquerda/direita, viés e travamento da direção & Integridade (simulada) & Alteração de parâmetros de equipamentos, como a temperatura das geladeiras \\
-Telemetria falsa & Integridade (simulada) & Operador vê \enquote{tudo normal} enquanto o equipamento falha \\
-Replay (repetir comandos antigos) & Proteção contra repetição (simulada) & Reuso de mensagens e credenciais capturadas \\
-Interceptar tráfego & Criptografia (simulada) & Roubo de chaves e segredos, como no LiteLLM \\
-Atraso, perda de pacotes e link derrubado & Sem camada: o \emph{failsafe} para o carro & Indisponibilidade, como no Porto de Santos \\
+Quebra de senha e sequestro do controle & Troca da senha padrão \texttt{1234} & Senhas fracas nos refrigeradores europeus; credenciais roubadas na Binance \\
+Inversões, viés e travamento da direção & Integridade & Alteração de parâmetros de equipamentos, como a temperatura das geladeiras \\
+Telemetria falsa & Integridade & Operador vê \enquote{tudo normal} enquanto o equipamento falha \\
+Replay & Proteção contra repetição & Reuso de mensagens e credenciais capturadas \\
+Interceptar tráfego & Criptografia & Roubo de chaves e segredos, como no LiteLLM \\
+Atraso, perda de pacotes e link derrubado & Sem camada: a parada segura do carro & Indisponibilidade, como no Porto de Santos \\
 \bottomrule
 \end{tabularx}
 \fonte{Elaborado pelos autores (2026).}
 \end{table}
 
-O painel mostra um indicador de 0 a 4 camadas de defesa ativas. Ele conta camadas demonstradas e não mede segurança real.
+\chapter{Detalhamento técnico}\label{cap:tecnico}
+
+\section{Visão geral}
+
+O sistema tem duas partes: o \textbf{carrinho} (hardware e firmware do ESP32) e o \textbf{sistema web} (servidor e interfaces). O código foi organizado em dois projetos, um para cada parte, além de um terceiro só com a documentação. A Figura~\ref{fig:arquitetura} mostra como as partes se conectam.
+
+\begin{figure}[htbp]
+\centering
+\caption{Arquitetura e caminho dos comandos}
+\label{fig:arquitetura}
+\begin{tikzpicture}[
+  font=\small,
+  caixa/.style={draw, rounded corners, align=center, minimum height=1.1cm, inner sep=4pt},
+  seta/.style={-{Stealth}, thick}
+]
+\node[caixa, text width=2.6cm] (piloto) at (0,2.2) {Celular\\(piloto)};
+\node[caixa, text width=2.6cm] (hacker) at (0,0.6) {Notebooks\\(hackers)};
+\node[caixa, text width=2.6cm] (telao) at (0,-1.0) {Telão e\\operador};
+\node[caixa, text width=3.6cm, minimum height=4.2cm] (srv) at (5.3,0.6) {\textbf{Servidor}\\[2pt]sessões e permissões\\[1pt]ataques e defesas\\[1pt]controle do carrinho\\[1pt]simulador};
+\node[caixa, text width=2.6cm] (esp) at (10.6,0.6) {ESP32\\(firmware)};
+\node[caixa, text width=2.6cm] (mot) at (10.6,2.6) {L298N e\\motores TT};
+\node[caixa, text width=2.6cm] (servo) at (10.6,-1.4) {Servo SG90\\(direção)};
+\draw[seta] (piloto) -- node[above, sloped, font=\scriptsize]{joystick} (srv.west |- piloto);
+\draw[seta, <->] (hacker) -- node[above, font=\scriptsize]{WebSocket} (srv.west |- hacker);
+\draw[seta] (srv.west |- telao) -- node[above, font=\scriptsize]{estado} (telao);
+\draw[seta, <->] (srv) -- node[above, font=\scriptsize]{WebSocket} node[below, font=\scriptsize]{Wi-Fi} (esp);
+\draw[seta] (esp) -- node[right, font=\scriptsize]{PWM} (mot);
+\draw[seta] (esp) -- node[right, font=\scriptsize]{PWM 50 Hz} (servo);
+\end{tikzpicture}
+\fonte{Elaborado pelos autores (2026).}
+\end{figure}
+
+Os navegadores nunca falam direto com o carrinho. O comando do piloto vai ao servidor, passa pelos ataques e defesas ativos e só então segue para o ESP32. O servidor é a única autoridade sobre equipes, sessões, permissões e estado da partida; o que o navegador envia sobre papel ou equipe é ignorado, e essas informações vêm sempre da sessão.
+
+\section{Componentes do carrinho}
+
+A Tabela~\ref{tab:componentes} lista os componentes usados no carrinho e a função de cada um.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Componentes do carrinho}
+\label{tab:componentes}
+\begin{tabularx}{\textwidth}{@{}P{5cm}L@{}}
+\toprule
+\textbf{Componente} & \textbf{Função} \\
+\midrule
+ESP32-WROOM-32 (placa de 38 pinos) & Microcontrolador com Wi-Fi e dois núcleos; recebe os comandos e aciona motores e servo. Fica numa placa de expansão com bornes de parafuso \\
+Ponte H L298N & Driver dos dois motores: define o sentido de cada um e recebe o PWM de velocidade \\
+2 motores TT amarelos com redução 1:48 (3 a 6~V) & Tração traseira, um motor por roda \\
+Servo SG90 & Direção das rodas dianteiras \\
+Regulador de tensão \emph{step-down} (LM2596, ajustado em 5~V) & Alimenta o ESP32 e o servo a partir da bateria \\
+2 baterias 18650 em série & 7,4~V nominais (8,4~V carregadas), com chave liga e desliga \\
+Peças impressas em 3D & Estrutura do carrinho \\
+4 rodas de borracha de 64~mm & Rodas traseiras presas no eixo dos motores; dianteiras livres \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
+\end{table}
+
+\section{Estrutura impressa em 3D}
+
+A estrutura foi projetada em CAD e impressa em 3D. A base mede 200 por 140~mm e tem a frente estreitada para dar espaço às rodas esterçarem. Em cima ficam as bandejas do ESP32, da L298N e do regulador; embaixo ficam os suportes dos motores, o servo de cabeça para baixo e o mecanismo de direção (alavanca, barras e mangas de eixo). O carrinho tem cerca de 21 por 20~cm, entre-eixos de 98~mm e massa estimada de 630~g. É um carro para piso liso e interno.
+
+O formato é o de um carro de verdade: tração nas rodas de trás e direção nas da frente. Ele não vira girando as rodas de um lado mais rápido que as do outro.
+
+\section{Alimentação}
+
+A bateria de 7,4~V alimenta dois ramos. O primeiro vai direto à L298N, que entrega a tensão aos motores. O segundo passa pelo regulador, que reduz para 5~V e alimenta o ESP32 e o servo. Todos os componentes compartilham o mesmo terra (GND). O servo nunca é ligado direto na bateria.
+
+Como a L298N tem queda de cerca de 2~V e os motores são de até 6~V, o PWM dos motores foi limitado a 80\% no firmware. O servo e o ESP32 dividem o mesmo 5~V; para evitar que um pico de corrente reinicie o ESP32 (\emph{brownout}), o servo gira com velocidade limitada e os motores aceleram em rampa.
+
+\section{Direção e tração}
+
+\textbf{Direção}: o servo move uma alavanca ligada a duas barras de direção, numa geometria de Ackermann simplificada (na curva, a roda de dentro esterça mais que a de fora). O comando do piloto, de $-100\%$ a $+100\%$, é convertido em um ângulo de servo de até $\pm 45^\circ$, abaixo do batente mecânico de cerca de $48^\circ$. Todo comando passa por uma única função que aplica esse limite. No limite, o raio de curva previsto no CAD é de cerca de 27~cm. O servo gira no máximo a 250 graus por segundo.
+
+\textbf{Tração}: cada motor é controlado por dois pinos de sentido e um pino de PWM na L298N, a cerca de 1~kHz. O piloto só escolhe frente, ré ou parar; a velocidade é fixa. Internamente o firmware usa uma rampa de aceleração de cerca de 150~ms e espera o motor parar antes de inverter o sentido. Para parar em emergência, o PWM dos dois motores vai a zero na hora, sem esperar a rampa.
+
+\section{Firmware}
+
+O firmware foi escrito em C++ com o \emph{framework} Arduino e o PlatformIO, e aproveita os dois núcleos do ESP32:
+
+\begin{itemize}
+  \item \textbf{Núcleo 0 -- tarefa de rede}: cuida do Wi-Fi, da conexão com o servidor, das mensagens e da telemetria.
+  \item \textbf{Núcleo 1 -- laço de controle}: aplica os comandos ao servo e aos motores e verifica o tempo de validade de cada comando.
+\end{itemize}
+
+As duas partes trocam dados por filas. Assim, se a rede travar, o controle continua rodando e consegue parar o carrinho. Em teste com a rede presa por 3~s, o carrinho parou entre 347 e 399~ms.
+
+Ao ligar, a primeira ação é deixar os motores desabilitados e o servo no centro. Só depois o firmware conecta à rede. A configuração é feita sem regravar o código: na primeira vez, o carrinho cria uma rede Wi-Fi própria; pelo celular, abre-se uma página onde se informam a rede do laboratório, o endereço do servidor, a identificação do carrinho e o segredo de autenticação, que ficam salvos na memória do ESP32.
+
+\section{Sistema web}
+
+O servidor roda no notebook, em TypeScript com Bun, Express e WebSocket. Ele concentra:
+
+\begin{itemize}
+  \item \textbf{Sessões e permissões}: login com senha guardada como \emph{hash} argon2id, uma vaga por papel e verificação da permissão a cada mensagem.
+  \item \textbf{Máquina de estados da partida}: configuração, pronto, em andamento, pausado e encerrado. Ao sair de \enquote{em andamento}, todos os carros param.
+  \item \textbf{Cadeia de comandos}: o comando do piloto passa pelos ataques ativos (replay, travamento, viés e inversões) e pelas defesas, que podem bloquear as alterações. O comando de parada nunca passa pelos ataques.
+  \item \textbf{Controle do carrinho}: numera os comandos, limita o envio a 20 por segundo, dá prioridade à parada e para o carro se o piloto deixar de mandar comandos.
+  \item \textbf{Simulador}: um carrinho virtual com a mesma lógica do firmware, que permite jogar sem hardware e serve de plano B na apresentação.
+\end{itemize}
+
+As interfaces foram feitas em React com TypeScript. Há telas para o piloto (joystick para toque e teclado), para os hackers (abas de ataque e defesa), para o operador (controle da partida, código QR para os celulares entrarem e métricas) e para o telão. Todas as mensagens entre navegador e servidor são validadas por esquemas compartilhados (Zod); mensagens fora do formato são recusadas.
+
+\section{Comunicação entre o ESP32 e o servidor}
+
+O notebook, os celulares e o ESP32 ficam na mesma rede Wi-Fi de 2,4~GHz. O ESP32 mantém uma conexão WebSocket com o servidor, por onde trafegam mensagens em JSON de até 512 bytes. A Tabela~\ref{tab:mensagens} resume as mensagens.
+
+\begin{enumerate}
+  \item \textbf{Conexão e autenticação}: o ESP32 abre a conexão e, em até 3~s, envia sua identificação e um segredo. Se estiverem corretos, o servidor responde com as boas-vindas e o tempo de validade dos comandos; se não, fecha a conexão. Se o mesmo carrinho conectar de novo, a conexão antiga é substituída.
+  \item \textbf{Comando}: cada comando de movimento leva um número de sequência, a tração (ré, neutro ou frente), a direção ($-100$ a $+100$) e um tempo de validade de 400~ms. O firmware só aceita números de sequência maiores que o último recebido e valores dentro da faixa; caso contrário, recusa e para.
+  \item \textbf{Confirmação}: depois de aplicar um comando, o ESP32 responde com os valores que realmente aplicou. É isso que o telão mostra como \enquote{confirmado}, ao lado do \enquote{solicitado} pelo piloto.
+  \item \textbf{Telemetria}: a cada 500~ms o ESP32 envia tempo ligado, intensidade do sinal Wi-Fi, último comando, posição atual e contadores de falhas. O servidor manda um sinal de vida a cada 1~s.
+  \item \textbf{Parada}: um comando de parada é sempre obedecido, mesmo fora de ordem. Quando o carrinho para por conta própria, ele informa o motivo.
+\end{enumerate}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Mensagens entre servidor e ESP32}
+\label{tab:mensagens}
+\begin{tabularx}{\textwidth}{@{}P{3.4cm}P{3.6cm}L@{}}
+\toprule
+\textbf{Mensagem} & \textbf{Sentido} & \textbf{Conteúdo} \\
+\midrule
+\texttt{device.hello} & ESP32 $\rightarrow$ servidor & Identificação do carrinho, segredo e versão do firmware \\
+\texttt{device.welcome} & servidor $\rightarrow$ ESP32 & Confirma a autenticação e informa a validade dos comandos \\
+\texttt{device.drive} & servidor $\rightarrow$ ESP32 & Sequência, tração, direção e validade \\
+\texttt{device.stop} & servidor $\rightarrow$ ESP32 & Parada imediata, com o motivo \\
+\texttt{device.heartbeat} & servidor $\rightarrow$ ESP32 & Sinal de vida; não mantém o carro andando \\
+\texttt{device.ack} & ESP32 $\rightarrow$ servidor & Valores aplicados de fato \\
+\texttt{device.telemetry} & ESP32 $\rightarrow$ servidor & Estado do carrinho a cada 500~ms \\
+\texttt{device.stopped} & ESP32 $\rightarrow$ servidor & Aviso de parada e motivo \\
+\texttt{device.fault} & ESP32 $\rightarrow$ servidor & Mensagem inválida recebida \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
+\end{table}
+
+\subsection{Parada segura}
+
+A regra mais importante do sistema é que o carrinho pare sozinho quando algo dá errado. Enquanto o piloto segura o joystick, o celular reenvia o comando a cada 100~ms. Cada comando vale por 400~ms. Se o piloto soltar o joystick, se a rede cair ou se um ataque atrasar ou bloquear os comandos, o comando expira e os motores desligam. Essa verificação existe em duas camadas, no servidor e no firmware, e nenhum ataque consegue desligá-la. O sinal de vida do servidor não renova a validade, então uma conexão aberta sem comandos não mantém o carro andando.
+
+O firmware também vigia o silêncio da rede: depois de 1,5~s sem nenhuma mensagem do servidor, para de enviar telemetria; depois de 5~s, fecha a conexão e reconecta. Ao reconectar, o carrinho continua parado até receber um comando novo do piloto.
+
+\subsection{Onde os ataques acontecem}
+
+Todos os ataques são aplicados dentro do servidor, entre o piloto e o carrinho. Para o firmware, um ataque aparece apenas como um comando com valores alterados, um intervalo maior entre comandos ou uma parada. Por isso o ESP32 não precisou mudar para receber os novos ataques, e a parada segura continua valendo durante todos eles.
 
 \section{O que é real e o que é simulado}
 
-São proteções reais: autenticação por senha com hash argon2id e política de senha forte; revogação da sessão do piloto quando a senha muda; sessões em \emph{cookie} \texttt{HttpOnly}; autorização a cada mensagem; limite de tentativas contra força bruta; verificação de origem; e a parada segura em duas camadas (servidor e firmware).
+São proteções reais: autenticação por senha com \emph{hash} argon2id e política de senha forte; desconexão do piloto quando a senha muda; sessões em \emph{cookie} protegido; autorização a cada mensagem; limite de tentativas contra força bruta; verificação de origem das conexões; autenticação do ESP32 por segredo; e a parada segura em duas camadas.
 
-São simulações didáticas: as etapas de invasão, a integridade (não é HMAC), a proteção contra repetição e a criptografia (não é TLS). Essa separação é explicada ao público, para não passar a ideia de que o sistema é seguro só porque o indicador está cheio.
+São simulações didáticas: as etapas de invasão, a integridade (não é uma assinatura criptográfica como HMAC), a proteção contra repetição e a criptografia (não é TLS; a rede trafega em texto claro). Essa separação é explicada ao público, para não passar a ideia de que o sistema é seguro só porque o indicador está cheio.
 
 \chapter{Resultados e validação}
 
