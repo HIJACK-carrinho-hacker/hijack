@@ -4,6 +4,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage{lmodern}
 \usepackage{microtype}
+\usepackage{amsmath}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{array}
@@ -15,6 +16,7 @@
 \usetikzlibrary{arrows.meta}
 \usepackage{hyperref}
 \usepackage[alf]{abntex2cite}
+\hyphenation{BLEEPINGCOMPUTER}
 
 \hypersetup{hidelinks}
 \setlist{nosep}
@@ -28,14 +30,14 @@
 \instituicao{Universidade Federal do Rio Grande do Norte}
 \tipotrabalho{Relatório técnico}
 \orientador[Professor:]{Alexandre Magnus Fernandes Guimarães}
-\preambulo{Relatório final apresentado à disciplina Fundamentos de Circuito e Sistemas Controlados da Universidade Federal do Rio Grande do Norte.}
+\preambulo{Relatório final apresentado à disciplina Fundamentos de Circuitos e Sistemas Controlados da Universidade Federal do Rio Grande do Norte.}
 
 \renewcommand{\imprimircapa}{%
   \begin{capa}%
     \center
     {\ABNTEXchapterfont\large UNIVERSIDADE FEDERAL DO RIO GRANDE DO NORTE}\par
     \vspace*{0.3cm}
-    {\large Fundamentos de Circuito e Sistemas Controlados}\par
+    {\large Fundamentos de Circuitos e Sistemas Controlados}\par
     \vspace*{2cm}
     {\ABNTEXchapterfont\large\imprimirautor}
     \vfill
@@ -57,10 +59,28 @@
 \imprimirfolhaderosto
 
 \begin{resumo}
-O HIJACK é uma demonstração didática de cibersegurança em que um carrinho controlado por ESP32 é pilotado pelo celular e atacado, ao vivo, por uma equipe adversária. Cada ataque tem efeito físico visível (o carro vira para o lado errado, anda de ré, para ou é sequestrado), o que torna concretos conceitos como senha padrão, integridade, repetição, interceptação e disponibilidade. O projeto parte do cenário de 2025 e 2026, em que ataques assistidos por inteligência artificial (IA) e ataques a equipamentos conectados passaram a ter impacto direto no mundo físico e financeiro. Este relatório apresenta esse contexto, a metodologia, o sistema desenvolvido, os testes realizados e as limitações.
+O HIJACK é uma demonstração didática de cibersegurança em que um carrinho controlado por ESP32 é pilotado pelo celular e atacado, ao vivo, por uma equipe adversária. A maioria dos ataques tem efeito físico visível (o carrinho vira para o lado errado, anda de ré, para ou é sequestrado), o que torna concretos conceitos como senha padrão, integridade, repetição, interceptação e disponibilidade. O projeto parte do cenário de 2025 e 2026, em que ataques assistidos por inteligência artificial (IA) e ataques a equipamentos conectados passaram a ter impacto direto no mundo físico e financeiro. Este relatório apresenta esse contexto, a metodologia, o sistema desenvolvido, os testes realizados e as limitações.
 
-\textbf{Palavras-chave}: cibersegurança. sistemas ciberfísicos. IoT. inteligência artificial. ESP32. ensino.
+\textbf{Palavras-chave}: cibersegurança; sistemas ciberfísicos; IoT; inteligência artificial; ESP32; ensino.
 \end{resumo}
+
+\begin{siglas}
+  \item[CAD] Projeto assistido por computador (\emph{Computer-Aided Design})
+  \item[CVE] Identificador público de vulnerabilidade (\emph{Common Vulnerabilities and Exposures})
+  \item[CVSS] Escala de gravidade de vulnerabilidades, de 0 a 10
+  \item[DDoS] Negação de serviço distribuída
+  \item[GND] Terra (referência de 0~V) do circuito
+  \item[GPIO] Pino de entrada e saída de uso geral do microcontrolador
+  \item[HMAC] Código de autenticação de mensagem baseado em \emph{hash}
+  \item[IA] Inteligência artificial
+  \item[IoT] Internet das coisas: equipamentos físicos conectados à rede
+  \item[JSON] Formato de texto para troca de dados estruturados
+  \item[NCSC] Centro Nacional de Cibersegurança do Reino Unido
+  \item[PF] Polícia Federal
+  \item[PWM] Modulação por largura de pulso: liga e desliga o sinal rapidamente para controlar a potência média
+  \item[PyPI] Repositório oficial de pacotes da linguagem Python
+  \item[TLS] Protocolo que criptografa a comunicação na rede (o \enquote{s} do \emph{https})
+\end{siglas}
 
 \pdfbookmark[0]{\listfigurename}{lof}
 \listoffigures*
@@ -78,15 +98,15 @@ O HIJACK é uma demonstração didática de cibersegurança em que um carrinho c
 
 \chapter{Introdução}
 
-Ataques cibernéticos deixaram de afetar apenas dados. Em outubro e novembro de 2026, refrigeradores de supermercados europeus foram aquecidos remotamente a até 50~\textdegree C~\cite{aljazeera-geladeiras}; o maior porto do Brasil ficou sem sistemas digitais~\cite{sbt-santos}; e uma corretora de criptomoedas perdeu cerca de US\$~6,3 bilhões em minutos~\cite{techstartups-binance}. Ao mesmo tempo, a IA passou a ser usada pelos dois lados: para orquestrar invasões quase sem intervenção humana~\cite{anthropic-gtg1002} e para encontrar falhas críticas em softwares usados por milhões de sites~\cite{kratikal-php2shell}.
+Ataques cibernéticos deixaram de afetar apenas dados. Em outubro e novembro de 2026, refrigeradores de supermercados europeus foram aquecidos remotamente a até 50~\textdegree C~\cite{aljazeera-geladeiras,tecnoblog-geladeiras}; a autoridade do maior porto do Brasil teve seus sistemas fora do ar~\cite{sbt-santos}; e uma corretora de criptomoedas perdeu cerca de US\$~6,3 bilhões~\cite{reuters-binance}. Ao mesmo tempo, a IA passou a ser usada pelos dois lados: para orquestrar invasões quase sem intervenção humana~\cite{anthropic-gtg1002} e para encontrar falhas críticas em softwares usados por milhões de sites~\cite{wiz-php2shell}.
 
-Esses temas são difíceis de ensinar só com slides, porque o ataque costuma ser invisível. O HIJACK resolve isso com um objeto físico: um carrinho que obedece ao piloto até ser atacado. O público vê, no chão, o efeito de uma senha fraca ou de um comando adulterado, e vê também a defesa funcionando.
+Esses temas são difíceis de ensinar só com slides, porque o ataque costuma ser invisível. O HIJACK resolve isso com um objeto físico: um carrinho que obedece ao piloto até ser atacado. Durante a apresentação, o público vê o efeito de uma senha fraca ou de um comando adulterado no carrinho e no telão, e vê também a defesa funcionando.
 
 \section{Objetivos}
 
 \begin{itemize}
   \item Demonstrar, de forma segura e controlada, ataques típicos a dispositivos conectados.
-  \item Relacionar cada ataque a um caso real recente e à defesa correspondente.
+  \item Relacionar cada ataque à defesa correspondente e, quando houver um equivalente, a um caso real recente.
   \item Construir um sistema completo (carrinho, firmware, servidor e interfaces) que funcione numa rede local isolada.
 \end{itemize}
 
@@ -116,37 +136,35 @@ Porto de Santos & 06/nov/2026 & Sistemas, site, internet e telefone fora do ar &
 
 \section{IA como operadora do ataque: campanha GTG-1002}
 
-Em novembro de 2025 a Anthropic relatou ter interrompido uma campanha de espionagem, atribuída a um grupo patrocinado pelo Estado chinês, em que o Claude Code foi usado como motor autônomo de invasão contra cerca de 30 organizações~\cite{anthropic-gtg1002,thn-gtg1002}. Os operadores enganaram o modelo dizendo que faziam testes de intrusão autorizados. A IA fez reconhecimento, busca de vulnerabilidades, exploração, coleta de credenciais e extração de dados, com humanos intervindo em 10 a 20\% do tempo. É o primeiro caso documentado de ataque em larga escala executado majoritariamente por um agente de IA.
+Em novembro de 2025 a Anthropic relatou ter interrompido, depois de detectá-la em meados de setembro, uma campanha de espionagem, atribuída a um grupo patrocinado pelo Estado chinês, em que o Claude Code foi usado como motor autônomo de invasão contra cerca de 30 organizações, entre empresas de tecnologia, instituições financeiras, indústrias químicas e órgãos de governo~\cite{anthropic-gtg1002,axios-gtg1002}. Os operadores enganaram o modelo fingindo ser uma empresa de segurança que fazia testes defensivos e dividiram o ataque em tarefas pequenas, que isoladamente não pareciam maliciosas~\cite{tecnoblog-gtg1002}. A IA fez reconhecimento, busca de vulnerabilidades, exploração, coleta de credenciais e extração de dados, executando de 80 a 90\% do trabalho; os humanos tomaram só algumas decisões críticas por campanha. É o primeiro caso documentado de ataque em larga escala executado majoritariamente por um agente de IA.
 
 \section{IA na cadeia de suprimentos: LiteLLM}
 
-O LiteLLM é uma biblioteca Python que conecta aplicações a vários provedores de modelos de IA e, por isso, guarda chaves de API valiosas. Em 24 de março de 2026, as versões 1.82.7 e 1.82.8 foram publicadas no PyPI com um ladrão de credenciais, numa campanha do grupo TeamPCP que começou pelo comprometimento do scanner de segurança Trivy~\cite{helpnet-litellm,bleeping-litellm}. Na versão 1.82.8, um arquivo \texttt{.pth} fazia o código malicioso rodar em qualquer processo Python da máquina. Em 21 de outubro de 2026 o pacote foi comprometido de novo: a versão 1.107.0 ficou cerca de duas horas no ar e as credenciais roubadas foram testadas contra serviços de IA na nuvem (\emph{LLMjacking})~\cite{giskard-outubro}. O caso mostra que a própria infraestrutura de IA virou alvo.
+O LiteLLM é uma biblioteca Python que conecta aplicações a vários provedores de modelos de IA e, por isso, guarda chaves de API valiosas. Em 24 de março de 2026, as versões 1.82.7 e 1.82.8 foram publicadas no PyPI com um ladrão de credenciais, numa campanha do grupo TeamPCP, o mesmo que dias antes havia comprometido o scanner de segurança Trivy~\cite{helpnet-litellm,bleeping-litellm}. Em 21 de outubro de 2026 o pacote foi comprometido de novo: invasores tomaram o processo de publicação e lançaram a versão 1.107.0, que ficou menos de duas horas no PyPI e cerca de duas horas e meia no Docker Hub~\cite{bleeping-litellm-out}. Um arquivo \texttt{.pth} fazia o código malicioso rodar sempre que o Python era iniciado, mesmo sem importar o LiteLLM, e o código roubava credenciais de nuvem, segredos de desenvolvimento e as chaves de provedores de IA guardadas pelo próprio LiteLLM. O caso mostra que a própria infraestrutura de IA virou alvo.
 
 \section{PHP, GitLab e Node.js: falhas críticas no mesmo dia}
 
-Em 21 de outubro de 2026 foram divulgadas, quase simultaneamente, três falhas graves em tecnologias que sustentam boa parte da web~\cite{averlon-cves}:
+Em 21 de outubro de 2026 foram divulgadas falhas graves em três tecnologias que sustentam boa parte da web:
 
 \begin{itemize}
-  \item \textbf{PHP2Shell} (CVE-2026-109618 e CVE-2026-109619): execução remota de código sem autenticação em sites PHP, inclusive WordPress, Drupal e Joomla. Foi encontrada por pesquisadores da Wiz e da Calif com ajuda de modelos de IA, que também ajudaram a construir e adaptar os \emph{exploits}~\cite{kratikal-php2shell}. Um \emph{honeypot} da Amazon registrou exploração em 17 de outubro, antes da correção existir.
-  \item \textbf{GitLab} (CVE-2026-110264, nota CVSS 10,0): execução de código sem login em servidores GitLab auto-hospedados, desde a versão 7.0 (2014). O GitLab.com já estava corrigido~\cite{averlon-cves}.
-  \item \textbf{Node.js} (CVE-2026-111497): escrita fora dos limites no decodificador Brotli embutido; uma prova de conceito pública apareceu no dia seguinte à correção~\cite{giskard-outubro}.
+  \item \textbf{PHP2Shell} (CVE-2026-109618 e CVE-2026-109619): execução remota de código sem autenticação no próprio interpretador PHP, demonstrada contra WordPress, Drupal e Joomla. As falhas foram encontradas por pesquisadores da Calif e da Wiz com ajuda de modelos de IA, que também foram usados para construir os \emph{exploits} (programas que exploram a falha) e validar as correções~\cite{wiz-php2shell,alura-php2shell}. Informações vazaram antes da hora, e a Amazon registrou uma tentativa de exploração em 17 de outubro, quatro dias antes da correção~\cite{alura-php2shell}.
+  \item \textbf{GitLab} (CVE-2026-110264, severidade máxima): um estouro de inteiro ao compilar uma expressão regular especialmente construída permitia, sob certas condições, que um atacante sem login executasse código em servidores GitLab auto-hospedados. O GitLab.com já estava corrigido~\cite{bleeping-gitlab}.
+  \item \textbf{Node.js} (CVE-2026-111497): dados comprimidos malformados podiam escrever além do fim de um \emph{buffer} no decodificador Brotli embutido, com risco de execução remota de código. A falha foi relatada pela equipe de segurança do OpenAI Codex, outro exemplo de IA usada na defesa~\cite{nodejs-outubro}.
 \end{itemize}
-
-O resultado foi uma corrida de empresas para atualizar servidores, contêineres e pipelines de integração contínua. Nas fontes consultadas não foi encontrado registro de ataque de negação de serviço (DDoS) contra o GitLab nesse episódio; o risco relatado foi a invasão de instâncias auto-hospedadas sem atualização.
 
 \section{Binance: engenharia social e IA interna}
 
-Em 29 de outubro de 2026 a Binance teve cerca de US\$~6,3 bilhões retirados de suas carteiras quentes, o maior roubo de criptoativos registrado~\cite{bleeping-binance,techstartups-binance}. Segundo o relatório da empresa, o ataque começou meses antes: um engenheiro instalou uma ferramenta adulterada e, em setembro, outro recebeu uma falsa entrevista de emprego com um \enquote{teste de programação} contendo \emph{malware}. A partir desse computador e de uma ferramenta interna de IA, os invasores chegaram a outros engenheiros e a credenciais de implantação com acesso à infraestrutura de assinatura das carteiras. O FBI atribuiu o roubo ao grupo norte-coreano TraderTraitor. Cerca de US\$~2,85 bilhões foram congelados ou interceptados.
+Em 29 de outubro de 2026 a Binance teve criptoativos retirados de suas carteiras quentes (as carteiras conectadas à internet, usadas nos saques do dia a dia). As primeiras estimativas falavam em até US\$~5,8 bilhões~\cite{bleeping-binance}; o relatório da empresa indicou cerca de US\$~6,3 bilhões, possivelmente o maior roubo financeiro já registrado~\cite{reuters-binance}. Segundo o relatório da empresa, o ataque começou meses antes: em junho, um funcionário instalou uma versão adulterada de uma ferramenta de programação; em setembro, um engenheiro passou por um processo seletivo falso, que incluiu uma entrevista com o suposto diretor-executivo de uma empresa fictícia, e baixou uma \enquote{tarefa} com código malicioso. Em 20 de outubro, a partir desse computador e de uma ferramenta interna de IA da Binance, os invasores tomaram as máquinas de dois desenvolvedores das carteiras e chegaram às credenciais usadas no saque~\cite{reuters-binance,startse-binance}. O FBI atribuiu o roubo ao grupo norte-coreano TraderTraitor; a Coreia do Norte nega~\cite{startse-binance}. A Binance prometeu ressarcir todos os clientes~\cite{reuters-binance}.
 
 \section{Supermercados na Europa: ataque ciberfísico}
 
-Em outubro de 2026 centenas de supermercados na França tiveram os sistemas de refrigeração atacados; em 2 de novembro, mais de 100 lojas na Bélgica, Luxemburgo, Suécia, Irlanda e Estônia relataram geladeiras e freezers aquecidos, em alguns casos a 50~\textdegree C, com perda de alimentos e até incêndios~\cite{aljazeera-geladeiras,aljazeera-quem,cbs-geladeiras}. Foram afetadas redes como Delhaize, Carrefour, Coop e SuperValu. Especialistas apontaram controladores conectados à internet, gerenciados remotamente por terceiros, sem atualização e com senhas fáceis de adivinhar. Ninguém assumiu a autoria. No mesmo período, o NCSC britânico alertou que ataques potencializados por IA contra infraestrutura crítica devem se tornar rotina nos próximos anos~\cite{aljazeera-quem}.
+Em outubro de 2026 centenas de supermercados na França tiveram os sistemas de refrigeração atacados; na noite de 1º para 2 de novembro, lojas na Bélgica, Luxemburgo, Suécia, Irlanda e Estônia tiveram geladeiras e freezers aquecidos remotamente, em alguns casos a 50~\textdegree C, com perda de alimentos~\cite{aljazeera-geladeiras,cbs-geladeiras,tecnoblog-geladeiras}. Foram afetadas redes como Delhaize, Carrefour, Coop e SuperValu~\cite{aljazeera-quem}. Especialistas apontaram como fraquezas comuns desses sistemas os controladores conectados à internet, gerenciados remotamente por terceiros, sem atualização e com senhas fáceis de adivinhar~\cite{aljazeera-quem}; o centro nacional de cibersegurança da Suécia afirmou que muitos equipamentos industriais expostos no país precisam de atualizações de segurança~\cite{tecnoblog-geladeiras}. Ninguém assumiu a autoria. No mesmo período, o NCSC britânico alertou que o Reino Unido deve se preparar para um ciberataque com IA contra sua infraestrutura crítica em até dois anos~\cite{aljazeera-quem}.
 
-Este é o caso mais próximo do HIJACK: um equipamento físico controlado pela rede, com senha fraca, cujo comportamento é alterado à distância.
+Este é o caso mais próximo do HIJACK: um equipamento físico controlado pela rede, do tipo que especialistas apontam como vulnerável por senhas fracas e falta de atualização, cujo comportamento é alterado à distância. A forma exata de entrada dos invasores não foi confirmada.
 
 \section{Porto de Santos}
 
-Em 6 de novembro de 2026 a Autoridade Portuária de Santos detectou um ataque cibernético após uma queda de energia. Site, sistemas internos, internet e telefonia ficaram fora do ar por dias; a operação de navios e os acessos terrestres continuaram por meios alternativos~\cite{sbt-santos}. A Polícia Federal abriu inquérito, a Cesportos elevou o nível de proteção do porto para II e foi criado um gabinete de crise, com recuperação de cerca de 70\% dos \emph{backups} nas primeiras semanas~\cite{socmil-santos}. Causa, autoria e eventual vazamento de dados seguiam em apuração.
+Em 6 de novembro de 2026, após uma queda de energia, os sistemas da Autoridade Portuária de Santos saíram do ar. Site, sistemas internos e serviços usados por clientes foram afetados; internet e telefonia voltaram em 9 de novembro, e em 10 de novembro a autoridade confirmou o ataque cibernético. A movimentação de navios e cargas e os acessos terrestres continuaram, com atendimento por meios alternativos~\cite{sbt-santos,carta-santos}. A Polícia Federal abriu inquérito, e a comissão de segurança portuária de São Paulo elevou o nível de proteção do porto para 2, ampliando a inspeção de cargas~\cite{carta-santos}. Em 12 de novembro, cerca de 70\% das cópias de segurança tinham sido recuperadas, mas parte dos sistemas seguia afetada~\cite{times-santos}. Causa, autoria e eventual vazamento de dados seguiam em apuração.
 
 \section{Síntese}
 
@@ -166,7 +184,7 @@ O trabalho foi feito de forma incremental, em etapas pequenas e verificáveis, c
 
 O desenvolvimento usou assistentes de programação com IA (Claude Code e Codex) sob revisão da equipe. A mesma classe de ferramenta que aparece no caso GTG-1002 foi usada aqui para construir uma defesa didática, o que ilustra o caráter de uso dual da IA.
 
-Por segurança, o projeto adota três regras: nenhuma varredura ou exploração de rede real (os ataques são simulados no servidor); rede local isolada; e parada segura do carrinho que nenhum ataque consegue desligar.
+Por segurança, o projeto adota três regras: nenhuma varredura ou exploração de rede real (os ataques são simulados no servidor); rede local isolada; e parada automática do carrinho por falta de comando, que nenhum ataque consegue desligar.
 
 \chapter{O jogo HIJACK}\label{cap:jogo}
 
@@ -178,8 +196,8 @@ O HIJACK é apresentado como um jogo de ataque e defesa. Um piloto dirige o carr
 
 \begin{itemize}
   \item \textbf{Piloto}: dirige o carrinho por um joystick virtual no celular. Controla frente e ré em velocidade fixa e a direção de forma proporcional (quanto mais o dedo vai para o lado, mais as rodas esterçam).
-  \item \textbf{Hacker de ataque}: num notebook, segue as etapas de invasão e liga os ataques contra o carrinho da equipe adversária.
-  \item \textbf{Hacker de defesa}: num notebook, liga as camadas de defesa do carrinho da própria equipe.
+  \item \textbf{Hacker de ataque} (atacante): num notebook, segue as etapas de invasão e liga os ataques contra o carrinho da equipe adversária.
+  \item \textbf{Hacker de defesa} (defensor): num notebook, liga as camadas de defesa do carrinho da própria equipe. No modo de dois carrinhos, um mesmo hacker acumula os papéis de atacante e de defensor.
   \item \textbf{Operador}: conduz a partida (iniciar, pausar, encerrar), escolhe se o carrinho é real ou simulado, pode parar todos os carros a qualquer momento e consulta as métricas no fim.
   \item \textbf{Público}: acompanha pelo telão, que mostra o carrinho e compara o comando pedido pelo piloto com o comando que o carrinho realmente recebeu.
 \end{itemize}
@@ -196,8 +214,8 @@ Cada jogador entra pelo navegador escolhendo papel e equipe e digitando a senha 
 \section{Como se joga}
 
 \begin{enumerate}
-  \item \textbf{Largada}: o operador inicia a partida e o piloto dirige livremente. Ao soltar o joystick, o carrinho para.
-  \item \textbf{Invasão em etapas}: o hacker de ataque passa por quatro etapas guiadas: escanear a rede (lista só os carrinhos cadastrados no jogo), identificar o adversário, explorar a vulnerabilidade (o relatório mostra a senha padrão e a falta de verificação de integridade) e modificar comandos. Só depois disso os ataques são liberados.
+  \item \textbf{Largada}: o operador inicia a partida e o piloto dirige livremente. Ao soltar o joystick, o carrinho para (a única exceção é o sequestro, descrito adiante).
+  \item \textbf{Invasão em etapas}: o hacker de ataque passa por quatro etapas guiadas --- escanear a rede (lista só os carrinhos cadastrados no jogo), identificar o adversário, explorar a vulnerabilidade (a tela de exploração mostra a senha padrão e a falta de verificação de integridade) e modificar comandos. Só depois disso os ataques são liberados.
   \item \textbf{Ataque}: o atacante liga os ataques da Tabela~\ref{tab:ataques-jogo}. O piloto percebe pelo comportamento do carrinho; o telão mostra \enquote{comando alterado no caminho}.
   \item \textbf{Defesa}: o hacker de defesa liga as camadas da Tabela~\ref{tab:defesas}. Cada camada neutraliza um grupo de ataques, e o atacante recebe o aviso de que a alteração foi bloqueada.
   \item \textbf{Encerramento}: o operador encerra e mostra as métricas: comandos recebidos, aplicados, alterados e bloqueados, paradas por falta de comando e tempo de resposta do carrinho.
@@ -212,15 +230,15 @@ Cada jogador entra pelo navegador escolhendo papel e equipe e digitando a senha 
 \toprule
 \textbf{Grupo} & \textbf{Ataque} & \textbf{Efeito no carrinho} \\
 \midrule
-Sabotagem & Inversão de frente/ré e de esquerda/direita & O piloto manda ir para a frente e o carro vai de ré, ou vira para o lado oposto \\
- & Viés e travamento da direção & O carro puxa para um lado ou a direção fica presa \\
- & Atraso e perda de pacotes & O carro responde atrasado ou engasga \\
- & Replay & O carro repete o que o piloto fez alguns segundos antes \\
+Sabotagem & Inversão de frente/ré e de esquerda/direita & O piloto manda ir para a frente e o carrinho vai de ré, ou vira para o lado oposto \\
+ & Viés e travamento da direção & O carrinho puxa para um lado ou a direção fica presa \\
+ & Atraso e perda de pacotes & O carrinho responde atrasado ou engasga \\
+ & Replay & O carrinho repete o que o piloto fez alguns segundos antes \\
 Espionagem & Interceptar tráfego & O atacante lê os comandos do piloto em texto claro \\
  & Quebra de senha & Uma lista de senhas comuns encontra a senha padrão \\
-Canal & Derrubar o link & O carro fica 5~s sem comandos e para sozinho \\
- & Telemetria falsa & O defensor vê o carro obedecendo enquanto ele faz outra coisa \\
-Controle & Sequestro & O atacante passa a dirigir o carro e o piloto perde o controle \\
+Canal & Derrubar o link & O carrinho fica 5~s sem comandos e para sozinho \\
+ & Telemetria falsa & O defensor vê o carrinho obedecendo enquanto ele faz outra coisa \\
+Controle & Sequestro & O atacante passa a dirigir o carrinho e o piloto perde o controle \\
 \bottomrule
 \end{tabularx}
 \fonte{Elaborado pelos autores (2026).}
@@ -229,48 +247,26 @@ Controle & Sequestro & O atacante passa a dirigir o carro e o piloto perde o con
 \begin{table}[htbp]
 \centering
 \small
-\caption{Camadas de defesa}
+\caption{Ataques, defesas e relação com casos reais}
 \label{tab:defesas}
-\begin{tabularx}{\textwidth}{@{}P{3.2cm}P{2.2cm}L@{}}
+\begin{tabularx}{\textwidth}{@{}P{3.4cm}P{3.4cm}L@{}}
 \toprule
-\textbf{Defesa} & \textbf{Tipo} & \textbf{O que bloqueia} \\
+\textbf{Ataque no HIJACK} & \textbf{Defesa (tipo)} & \textbf{Relação com o mundo real} \\
 \midrule
-Troca da senha padrão & Real & Quebra de senha e sequestro. A senha antiga deixa de valer na hora e o piloto precisa entrar de novo \\
-Integridade & Simulada & Inversões, viés, travamento e telemetria falsa \\
-Proteção contra repetição & Simulada & Replay \\
-Criptografia & Simulada & Torna ilegível o tráfego interceptado \\
+Quebra de senha e sequestro & Troca da senha padrão (real) & Senhas fracas, apontadas por especialistas como provável porta de entrada nos refrigeradores europeus; credenciais roubadas na Binance \\
+Inversões, viés e travamento da direção & Integridade (simulada) & Alteração de parâmetros de equipamentos, como a temperatura das geladeiras \\
+Telemetria falsa & Integridade (simulada) & Operador vê \enquote{tudo normal} enquanto o equipamento falha; sem caso equivalente na lista \\
+Replay & Proteção contra repetição (simulada) & Reuso de mensagens capturadas; sem caso equivalente na lista \\
+Interceptar tráfego & Criptografia (simulada) & Leitura de tráfego sem criptografia em redes de equipamentos; sem caso equivalente na lista \\
+Atraso, perda de pacotes e link derrubado & Sem camada: a parada automática do carrinho & Indisponibilidade, como no Porto de Santos \\
 \bottomrule
 \end{tabularx}
 \fonte{Elaborado pelos autores (2026).}
 \end{table}
 
-Atraso, perda de pacotes e queda do link não têm camada de defesa de propósito: mostram que disponibilidade é um problema à parte, e que o máximo que se pode garantir é que o carrinho pare em segurança. Um indicador de 0 a 4 mostra quantas camadas estão ligadas; ele conta camadas demonstradas e não mede segurança real. Uma lição importante do jogo é que trocar a senha não impede as inversões: a senha protege contra quem não tem acesso, mas não contra alterações feitas no caminho por um componente que já tem acesso.
+A troca da senha é a única defesa real: a senha antiga deixa de valer na hora e o piloto precisa entrar de novo. Atraso, perda de pacotes e queda do link não têm camada de defesa de propósito: mostram que disponibilidade é um problema à parte, e que o máximo que se pode garantir é que o carrinho pare em segurança. Um indicador de 0 a 4 mostra quantas camadas estão ligadas; ele conta camadas demonstradas e não mede segurança real. Uma lição importante do jogo é que trocar a senha não impede as inversões: a senha protege contra quem não tem acesso, mas não contra alterações feitas no caminho por um componente que já tem acesso.
 
 Cada controle de ataque e de defesa tem um ícone de informação com dois textos curtos: \enquote{Na vida real}, que descreve o cenário real, e \enquote{No HIJACK}, que explica o efeito e os limites da simulação. Os textos são conceituais e não ensinam a executar ataques.
-
-\section{Ataques do jogo e casos reais}
-
-A Tabela~\ref{tab:ataques} relaciona os ataques e as defesas do jogo aos casos do Capítulo~\ref{cap:contexto}.
-
-\begin{table}[htbp]
-\centering
-\small
-\caption{Ataques do HIJACK, defesas e relação com casos reais}
-\label{tab:ataques}
-\begin{tabularx}{\textwidth}{@{}P{3.6cm}LL@{}}
-\toprule
-\textbf{Ataque no HIJACK} & \textbf{Defesa no HIJACK} & \textbf{Relação com o mundo real} \\
-\midrule
-Quebra de senha e sequestro do controle & Troca da senha padrão \texttt{1234} & Senhas fracas nos refrigeradores europeus; credenciais roubadas na Binance \\
-Inversões, viés e travamento da direção & Integridade & Alteração de parâmetros de equipamentos, como a temperatura das geladeiras \\
-Telemetria falsa & Integridade & Operador vê \enquote{tudo normal} enquanto o equipamento falha \\
-Replay & Proteção contra repetição & Reuso de mensagens e credenciais capturadas \\
-Interceptar tráfego & Criptografia & Roubo de chaves e segredos, como no LiteLLM \\
-Atraso, perda de pacotes e link derrubado & Sem camada: a parada segura do carro & Indisponibilidade, como no Porto de Santos \\
-\bottomrule
-\end{tabularx}
-\fonte{Elaborado pelos autores (2026).}
-\end{table}
 
 \chapter{Detalhamento técnico}\label{cap:tecnico}
 
@@ -287,15 +283,17 @@ O sistema tem duas partes: o \textbf{carrinho} (hardware e firmware do ESP32) e 
   caixa/.style={draw, rounded corners, align=center, minimum height=1.1cm, inner sep=4pt},
   seta/.style={-{Stealth}, thick}
 ]
-\node[caixa, text width=2.6cm] (piloto) at (0,2.2) {Celular\\(piloto)};
-\node[caixa, text width=2.6cm] (hacker) at (0,0.6) {Notebooks\\(hackers)};
-\node[caixa, text width=2.6cm] (telao) at (0,-1.0) {Telão e\\operador};
-\node[caixa, text width=3.6cm, minimum height=4.2cm] (srv) at (5.3,0.6) {\textbf{Servidor}\\[2pt]sessões e permissões\\[1pt]ataques e defesas\\[1pt]controle do carrinho\\[1pt]simulador};
+\node[caixa, text width=2.6cm, minimum height=0.95cm] (piloto) at (0,2.5) {Celular\\(piloto)};
+\node[caixa, text width=2.6cm, minimum height=0.95cm] (hacker) at (0,1.15) {Notebooks\\(hackers)};
+\node[caixa, text width=2.6cm, minimum height=0.95cm] (oper) at (0,-0.2) {Operador};
+\node[caixa, text width=2.6cm, minimum height=0.95cm] (telao) at (0,-1.55) {Telão};
+\node[caixa, text width=3.6cm, minimum height=5cm] (srv) at (5.3,0.47) {\textbf{Servidor}\\[2pt]sessões e permissões\\[1pt]ataques e defesas\\[1pt]controle do carrinho\\[1pt]simulador};
 \node[caixa, text width=2.6cm] (esp) at (10.6,0.6) {ESP32\\(firmware)};
 \node[caixa, text width=2.6cm] (mot) at (10.6,2.6) {L298N e\\motores TT};
 \node[caixa, text width=2.6cm] (servo) at (10.6,-1.4) {Servo SG90\\(direção)};
-\draw[seta] (piloto) -- node[above, sloped, font=\scriptsize]{joystick} (srv.west |- piloto);
+\draw[seta, <->] (piloto) -- node[above, font=\scriptsize]{WebSocket} (srv.west |- piloto);
 \draw[seta, <->] (hacker) -- node[above, font=\scriptsize]{WebSocket} (srv.west |- hacker);
+\draw[seta, <->] (oper) -- node[above, font=\scriptsize]{WebSocket} (srv.west |- oper);
 \draw[seta] (srv.west |- telao) -- node[above, font=\scriptsize]{estado} (telao);
 \draw[seta, <->] (srv) -- node[above, font=\scriptsize]{WebSocket} node[below, font=\scriptsize]{Wi-Fi} (esp);
 \draw[seta] (esp) -- node[right, font=\scriptsize]{PWM} (mot);
@@ -310,15 +308,15 @@ Os navegadores nunca falam direto com o carrinho. O comando do piloto vai ao ser
 
 A Tabela~\ref{tab:componentes} lista os componentes usados no carrinho e a função de cada um, e a Figura~\ref{fig:eletronica} mostra a eletrônica montada no modelo 3D.
 
-\begin{figure}[htbp]
+\begin{figure}[!htbp]
 \centering
-\caption{Eletrônica embarcada sobre as bandejas impressas: ESP32 na placa de expansão com bornes, ponte H L298N e regulador de 5~V}
+\caption{Eletrônica embarcada sobre as bandejas do modelo 3D: ESP32 na placa de expansão com bornes, ponte H L298N e regulador de 5~V}
 \label{fig:eletronica}
 \includegraphics[width=0.75\textwidth]{figuras/detalhe_eletronica.jpg}
 \fonte{Modelo 3D elaborado pelos autores no Autodesk Fusion (2026).}
 \end{figure}
 
-\begin{table}[htbp]
+\begin{table}[!htbp]
 \centering
 \small
 \caption{Componentes do carrinho}
@@ -342,7 +340,7 @@ Peças impressas em 3D & Estrutura do carrinho \\
 
 \section{Estrutura impressa em 3D}
 
-A estrutura foi projetada em CAD e impressa em 3D. A base mede 200 por 140~mm e tem a frente estreitada para dar espaço às rodas esterçarem. Em cima ficam as bandejas do ESP32, da L298N e do regulador; embaixo ficam os suportes dos motores, o servo de cabeça para baixo, o mecanismo de direção (alavanca, barras e mangas de eixo) e o berço das duas baterias, com a chave liga/desliga acessível pela traseira. As Figuras~\ref{fig:perspectivas} e~\ref{fig:inferior} mostram o modelo 3D final. O carrinho tem cerca de 21 por 20~cm, entre-eixos de 98~mm e massa estimada de 630~g. É um carro para piso liso e interno.
+A estrutura foi projetada em CAD (Autodesk Fusion) e impressa em 3D. A base mede 200 por 140~mm e tem a frente estreitada para dar espaço às rodas esterçarem. Em cima ficam as bandejas do ESP32, da L298N e do regulador; embaixo ficam os suportes dos motores, o servo de cabeça para baixo, o mecanismo de direção (alavanca, barras e mangas de eixo) e o berço das duas baterias, com a chave liga/desliga acessível pela traseira. As Figuras~\ref{fig:perspectivas} e~\ref{fig:inferior} mostram o modelo 3D final. O carrinho tem cerca de 21 por 20~cm, entre-eixos de 98~mm e massa estimada de 630~g. É um carro para piso liso e interno.
 
 O formato é o de um carro de verdade: tração nas rodas de trás e direção nas da frente. Ele não vira girando as rodas de um lado mais rápido que as do outro.
 
@@ -384,11 +382,42 @@ O formato é o de um carro de verdade: tração nas rodas de trás e direção n
 
 A bateria de 7,4~V alimenta dois ramos. O primeiro vai direto à L298N, que entrega a tensão aos motores. O segundo passa pelo regulador, que reduz para 5~V e alimenta o ESP32 e o servo. Todos os componentes compartilham o mesmo terra (GND). O servo nunca é ligado direto na bateria.
 
-Como a L298N tem queda de cerca de 2~V e os motores são de até 6~V, o PWM dos motores foi limitado a 80\% no firmware. O servo e o ESP32 dividem o mesmo 5~V; para evitar que um pico de corrente reinicie o ESP32 (\emph{brownout}), o servo gira com velocidade limitada e os motores aceleram em rampa.
+Como a L298N tem queda de cerca de 2~V e os motores são de até 6~V, o PWM dos motores foi limitado a 80\% no firmware (o cálculo está na Seção~\ref{sec:ligacoes}). O servo e o ESP32 dividem o mesmo 5~V; para evitar que um pico de corrente reinicie o ESP32 (\emph{brownout}), o servo gira com velocidade limitada e os motores aceleram em rampa.
+
+\section{Ligações e cálculo do PWM}\label{sec:ligacoes}
+
+A Tabela~\ref{tab:pinos} mostra as ligações entre o ESP32, a L298N e o servo. Os pinos foram escolhidos evitando os que mudam de estado durante a inicialização do ESP32 (para o carrinho não dar um tranco ao ligar), os da memória interna e os que só funcionam como entrada. Os \emph{jumpers} de habilitação da L298N foram retirados para que a velocidade de cada motor venha do PWM do ESP32.
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Ligações do ESP32}
+\label{tab:pinos}
+\begin{tabularx}{\textwidth}{@{}P{2.2cm}P{4.2cm}L@{}}
+\toprule
+\textbf{GPIO} & \textbf{Ligado a} & \textbf{Sinal} \\
+\midrule
+13 & Servo SG90 (fio de sinal) & PWM de 50~Hz; pulso define o ângulo \\
+25 & ENA da L298N (motor esquerdo) & PWM de 1~kHz; velocidade \\
+26 e 27 & IN1 e IN2 (motor esquerdo) & Digital; sentido de giro \\
+21 & ENB da L298N (motor direito) & PWM de 1~kHz; velocidade \\
+18 e 19 & IN3 e IN4 (motor direito) & Digital; sentido de giro \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
+\end{table}
+
+\textbf{Cálculo do PWM}: com a bateria cheia (8,4~V) e a queda de cerca de 2~V nos transistores da L298N, os motores receberiam cerca de 6,4~V com o PWM em 100\%. Como o PWM controla a fração do tempo em que o motor fica ligado, a tensão média é aproximadamente proporcional a ele:
+\[
+V_{\text{motor}} \approx (V_{\text{bateria}} - V_{\text{queda}}) \times \text{PWM} = (8{,}4 - 2) \times 0{,}8 \approx 5{,}1~\text{V}.
+\]
+Com o teto de 80\%, a tensão média fica abaixo dos 6~V nominais dos motores TT. Na velocidade de cruzeiro, configurada em 70\%, fica em cerca de 4,5~V. O valor é uma estimativa: a queda na L298N varia com a corrente, e a tensão real nos motores ainda precisa ser medida com a bateria.
+
+\textbf{Controle em malha aberta}: o carrinho não tem sensores de realimentação (nem \emph{encoder} nas rodas, nem sensor de posição além do próprio servo, nem medição da bateria). O firmware aplica o PWM e o ângulo calculados, sem medir a velocidade ou o ângulo real das rodas. O que volta ao servidor é a confirmação do comando aplicado, não uma medida física.
 
 \section{Direção e tração}
 
-\textbf{Direção}: o servo move uma alavanca ligada a duas barras de direção, numa geometria de Ackermann simplificada (na curva, a roda de dentro esterça mais que a de fora). O comando do piloto, de $-100\%$ a $+100\%$, é convertido em um ângulo de servo de até $\pm 45^\circ$, abaixo do batente mecânico de cerca de $48^\circ$. Todo comando passa por uma única função que aplica esse limite. No limite, o raio de curva previsto no CAD é de cerca de 27~cm. O servo gira no máximo a 250 graus por segundo. A Figura~\ref{fig:curva} mostra a direção no limite de esterçamento.
+\textbf{Direção}: o servo move uma alavanca ligada a duas barras de direção, numa geometria de Ackermann simplificada (na curva, a roda de dentro esterça mais que a de fora). O comando do piloto, de $-100\%$ a $+100\%$, é convertido em um ângulo de servo de até $\pm 45^\circ$, abaixo do batente mecânico de cerca de $48^\circ$. Todo comando passa por uma única função que aplica esse limite. No limite, o raio de curva previsto no CAD é de cerca de 27~cm. O servo gira no máximo a 250°/s. A Figura~\ref{fig:curva} mostra a direção no limite de esterçamento.
 
 \begin{figure}[htbp]
 \centering
@@ -398,7 +427,7 @@ Como a L298N tem queda de cerca de 2~V e os motores são de até 6~V, o PWM dos 
 \fonte{Modelo 3D elaborado pelos autores no Autodesk Fusion (2026).}
 \end{figure}
 
-\textbf{Tração}: cada motor é controlado por dois pinos de sentido e um pino de PWM na L298N, a cerca de 1~kHz. O piloto só escolhe frente, ré ou parar; a velocidade é fixa. Internamente o firmware usa uma rampa de aceleração de cerca de 150~ms e espera o motor parar antes de inverter o sentido. Para parar em emergência, o PWM dos dois motores vai a zero na hora, sem esperar a rampa.
+\textbf{Tração}: cada motor é controlado por dois pinos de sentido e um pino de PWM na L298N, a cerca de 1~kHz. O piloto só escolhe frente, ré ou parar; a velocidade é fixa. Internamente o firmware usa uma rampa de aceleração de cerca de 150~ms e, para inverter o sentido, desacelera até zero e espera 100~ms. Para parar em emergência, o PWM dos dois motores vai a zero na hora, sem esperar a rampa.
 
 \section{Firmware}
 
@@ -409,7 +438,7 @@ O firmware foi escrito em C++ com o \emph{framework} Arduino e o PlatformIO, e a
   \item \textbf{Núcleo 1 -- laço de controle}: aplica os comandos ao servo e aos motores e verifica o tempo de validade de cada comando.
 \end{itemize}
 
-As duas partes trocam dados por filas. Assim, se a rede travar, o controle continua rodando e consegue parar o carrinho. Em teste com a rede presa por 3~s, o carrinho parou entre 347 e 399~ms.
+As duas partes trocam dados por filas. Assim, se a rede travar, o controle continua rodando e consegue parar o carrinho. Em teste com as saídas desligadas e a rede presa por 3~s, o firmware desligou o comando dos motores entre 347 e 399~ms; o tempo até as rodas pararem ainda não foi medido.
 
 Ao ligar, a primeira ação é deixar os motores desabilitados e o servo no centro. Só depois o firmware conecta à rede. A configuração é feita sem regravar o código: na primeira vez, o carrinho cria uma rede Wi-Fi própria; pelo celular, abre-se uma página onde se informam a rede do laboratório, o endereço do servidor, a identificação do carrinho e o segredo de autenticação, que ficam salvos na memória do ESP32.
 
@@ -418,21 +447,21 @@ Ao ligar, a primeira ação é deixar os motores desabilitados e o servo no cent
 O servidor roda no notebook, em TypeScript com Bun, Express e WebSocket. Ele concentra:
 
 \begin{itemize}
-  \item \textbf{Sessões e permissões}: login com senha guardada como \emph{hash} argon2id, uma vaga por papel e verificação da permissão a cada mensagem.
+  \item \textbf{Sessões e permissões}: login com senha guardada como \emph{hash} argon2id (um resumo irreversível da senha), uma vaga por papel e verificação da permissão a cada mensagem.
   \item \textbf{Máquina de estados da partida}: configuração, pronto, em andamento, pausado e encerrado. Ao sair de \enquote{em andamento}, todos os carros param.
   \item \textbf{Cadeia de comandos}: o comando do piloto passa pelos ataques ativos (replay, travamento, viés e inversões) e pelas defesas, que podem bloquear as alterações. O comando de parada nunca passa pelos ataques.
   \item \textbf{Controle do carrinho}: numera os comandos, limita o envio a 20 por segundo, dá prioridade à parada e para o carro se o piloto deixar de mandar comandos.
   \item \textbf{Simulador}: um carrinho virtual com a mesma lógica do firmware, que permite jogar sem hardware e serve de plano B na apresentação.
 \end{itemize}
 
-As interfaces foram feitas em React com TypeScript. Há telas para o piloto (joystick para toque e teclado), para os hackers (abas de ataque e defesa), para o operador (controle da partida, código QR para os celulares entrarem e métricas) e para o telão. Todas as mensagens entre navegador e servidor são validadas por esquemas compartilhados (Zod); mensagens fora do formato são recusadas.
+As interfaces foram feitas em React com TypeScript. Há telas para o piloto (joystick para toque e teclado), para os hackers (abas de ataque e defesa), para o operador (controle da partida, código QR para os celulares entrarem e métricas) e para o telão. Todas as mensagens entre navegador e servidor são validadas por esquemas compartilhados (biblioteca Zod); mensagens fora do formato são recusadas.
 
 \section{Comunicação entre o ESP32 e o servidor}
 
 O notebook, os celulares e o ESP32 ficam na mesma rede Wi-Fi de 2,4~GHz. O ESP32 mantém uma conexão WebSocket com o servidor, por onde trafegam mensagens em JSON de até 512 bytes. A Tabela~\ref{tab:mensagens} resume as mensagens.
 
 \begin{enumerate}
-  \item \textbf{Conexão e autenticação}: o ESP32 abre a conexão e, em até 3~s, envia sua identificação e um segredo. Se estiverem corretos, o servidor responde com as boas-vindas e o tempo de validade dos comandos; se não, fecha a conexão. Se o mesmo carrinho conectar de novo, a conexão antiga é substituída.
+  \item \textbf{Conexão e autenticação}: o ESP32 abre a conexão e, em até 3~s, envia sua identificação e um segredo. Se estiverem corretos, o servidor responde com as boas-vindas e o tempo de validade dos comandos; se não, fecha a conexão. Se o mesmo carrinho se conectar de novo, a conexão antiga é substituída.
   \item \textbf{Comando}: cada comando de movimento leva um número de sequência, a tração (ré, neutro ou frente), a direção ($-100$ a $+100$) e um tempo de validade de 400~ms. O firmware só aceita números de sequência maiores que o último recebido e valores dentro da faixa; caso contrário, recusa e para.
   \item \textbf{Confirmação}: depois de aplicar um comando, o ESP32 responde com os valores que realmente aplicou. É isso que o telão mostra como \enquote{confirmado}, ao lado do \enquote{solicitado} pelo piloto.
   \item \textbf{Telemetria}: a cada 500~ms o ESP32 envia tempo ligado, intensidade do sinal Wi-Fi, último comando, posição atual e contadores de falhas. O servidor manda um sinal de vida a cada 1~s.
@@ -464,39 +493,70 @@ O notebook, os celulares e o ESP32 ficam na mesma rede Wi-Fi de 2,4~GHz. O ESP32
 
 \subsection{Parada segura}
 
-A regra mais importante do sistema é que o carrinho pare sozinho quando algo dá errado. Enquanto o piloto segura o joystick, o celular reenvia o comando a cada 100~ms. Cada comando vale por 400~ms. Se o piloto soltar o joystick, se a rede cair ou se um ataque atrasar ou bloquear os comandos, o comando expira e os motores desligam. Essa verificação existe em duas camadas, no servidor e no firmware, e nenhum ataque consegue desligá-la. O sinal de vida do servidor não renova a validade, então uma conexão aberta sem comandos não mantém o carro andando.
+A regra mais importante do sistema é que o carrinho pare sozinho quando algo dá errado. Enquanto o piloto segura o joystick, o celular reenvia o comando a cada 100~ms. Cada comando vale por 400~ms. Ao soltar o joystick, o celular envia um comando de parada, e o carrinho para na hora. Se a rede cair ou se um ataque atrasar ou bloquear os comandos, o último comando expira em 400~ms e os motores desligam. Essa verificação de validade existe em duas camadas, no servidor e no firmware, e nenhum ataque consegue desligá-la. A única exceção, de propósito, é o sequestro: enquanto ele dura, o comando de parada do piloto é ignorado, mas o carrinho continua parando pela validade de 400~ms, pelo STOP ALL do operador, pela pausa da partida e quando o sequestrador solta o controle. O sinal de vida do servidor não renova a validade, então uma conexão aberta sem comandos não mantém o carro andando.
 
 O firmware também vigia o silêncio da rede: depois de 1,5~s sem nenhuma mensagem do servidor, para de enviar telemetria; depois de 5~s, fecha a conexão e reconecta. Ao reconectar, o carrinho continua parado até receber um comando novo do piloto.
 
 \subsection{Onde os ataques acontecem}
 
-Todos os ataques são aplicados dentro do servidor, entre o piloto e o carrinho. Para o firmware, um ataque aparece apenas como um comando com valores alterados, um intervalo maior entre comandos ou uma parada. Por isso o ESP32 não precisou mudar para receber os novos ataques, e a parada segura continua valendo durante todos eles.
+Todos os ataques são aplicados dentro do servidor, entre o piloto e o carrinho. Para o firmware, um ataque aparece apenas como um comando com valores alterados, um intervalo maior entre comandos ou uma parada. Por isso o ESP32 não precisou mudar para receber os ataques, e a parada por validade continua valendo durante todos eles.
 
 \section{O que é real e o que é simulado}
 
-São proteções reais: autenticação por senha com \emph{hash} argon2id e política de senha forte; desconexão do piloto quando a senha muda; sessões em \emph{cookie} protegido; autorização a cada mensagem; limite de tentativas contra força bruta; verificação de origem das conexões; autenticação do ESP32 por segredo; e a parada segura em duas camadas.
+São proteções reais: autenticação por senha com \emph{hash} argon2id e política de senha forte; desconexão do piloto quando a senha muda; sessões em \emph{cookie} protegido; autorização a cada mensagem; limite de tentativas contra força bruta; verificação de origem das conexões; autenticação do ESP32 por segredo; e a parada por validade do comando, em duas camadas.
 
 São simulações didáticas: as etapas de invasão, a integridade (não é uma assinatura criptográfica como HMAC), a proteção contra repetição e a criptografia (não é TLS; a rede trafega em texto claro). Essa separação é explicada ao público, para não passar a ideia de que o sistema é seguro só porque o indicador está cheio.
 
 \chapter{Resultados e validação}
 
 \begin{itemize}
-  \item \textbf{Software}: \emph{lint}, verificação de tipos, \emph{build} e 343 testes automatizados aprovados. Os testes de ponta a ponta direcionados aos ataques novos e aos textos educativos passaram (16 de 16, em desktop e celular emulado). A suíte completa de ponta a ponta não foi concluída após os últimos ajustes.
-  \item \textbf{ESP32 real com saídas desligadas}: 23 de 23 verificações dos ataques pelo protocolo real. O firmware confirmou inversão, viés, travamento, replay e sequestro; a perda de 60\% dos pacotes acionou a parada automática.
-  \item \textbf{Bancada com motores e servo soltos}: 18 de 18 verificações, com observação física parcial, e uma partida de ataque e defesa.
-  \item \textbf{Parada segura}: com a rede travada por 3~s, o carrinho parou logicamente entre 347 e 399~ms.
-  \item \textbf{Rede}: o \emph{hotspot} do celular em 2,4~GHz ficou 30 minutos sem queda; a rede \emph{mesh} doméstica caía a cada cerca de 5 minutos e foi descartada.
+  \item \textbf{Software}: \emph{lint}, verificação de tipos e \emph{build} sem erros; 343 testes automatizados (unitários e de integração) aprovados; e a suíte completa de testes de ponta a ponta no navegador aprovada, com 57 testes passando e 1 pulado (o controle por teclado, que não se aplica ao perfil de celular), executada em desktop e em celular emulado. Os testes de ponta a ponta usam os carrinhos simulados.
+  \item \textbf{ESP32 real com saídas desligadas}: 23 de 23 verificações dos ataques pelo protocolo real. Cada verificação compara o que o servidor mandou com o que o ESP32 confirmou. O firmware confirmou inversão, viés, travamento, replay e sequestro.
+  \item \textbf{Bancada com motores e servo soltos}: na primeira rodada, 17 de 18 verificações. A perda de pacotes, sorteada comando a comando, não chegava a parar o carrinho: com 10 comandos por segundo, o ESP32 só para depois de cerca de 4 perdas seguidas. A perda passou a ser feita em rajadas de 0,5~s, e a segunda rodada deu 18 de 18 (Tabela~\ref{tab:bancada}). Houve também uma partida completa de ataque e defesa.
+  \item \textbf{Parada segura}: com as saídas desligadas e a rede presa por 3~s, o firmware desligou o comando dos motores entre 347 e 399~ms.
+  \item \textbf{Rede}: o \emph{hotspot} do celular (o celular funcionando como roteador) em 2,4~GHz ficou 30 minutos sem queda; a rede doméstica com vários roteadores (\emph{mesh}) caía a cada 5 minutos, aproximadamente, e foi descartada.
 \end{itemize}
+
+\begin{table}[htbp]
+\centering
+\small
+\caption{Segunda rodada na bancada, com motores e servo soltos}
+\label{tab:bancada}
+\begin{tabularx}{\textwidth}{@{}P{3.4cm}L@{}}
+\toprule
+\textbf{Teste} & \textbf{Resultado observado} \\
+\midrule
+Soltar o joystick & Parada em 149~ms \\
+Inversão de frente/ré & Pedido de frente confirmado como ré pelo ESP32 \\
+Viés e travamento & Direção desviada em 40\%; direção presa em 30\% mesmo com o piloto pedindo $-80\%$ \\
+Replay & Comando antigo repetido em 50 de 50 amostras; recusado com a defesa ligada \\
+Atraso & Tempo até a confirmação subiu de 106 para 410~ms, em média \\
+Perda em rajadas & Carrinho parado em 36 de 148 amostras; 3 paradas por falta de comando no ESP32 \\
+Link derrubado & Parada em 124~ms; o carrinho voltou a obedecer depois de 5~s, sem reconectar \\
+Telemetria falsa & ESP32 confirmou ré; o defensor viu frente \\
+Sequestro & Comandos do piloto recusados; o atacante dirigiu; STOP ALL parou em 102~ms; trocar a senha encerrou o sequestro \\
+\bottomrule
+\end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
+\end{table}
 
 \section{Limitações}
 
-O carrinho ainda não foi testado montado no chassi nem andando no chão; os testes físicos foram feitos com motores e servo soltos. A alimentação do ESP32 apresentou queda de cerca de 0,5~V por contatos de protoboard e será refeita. A rede é aberta (sem TLS), aceitável apenas no laboratório isolado.
+\begin{itemize}
+  \item O carrinho ainda não foi testado montado no chassi nem andando no chão; os testes físicos foram feitos com motores e servo soltos sobre a bancada.
+  \item As baterias ainda não foram usadas: os testes com motores usaram uma fonte de bancada de 8,4~V com limite de corrente de 3~A.
+  \item Por decisão da equipe, não há fusível nem circuito de proteção das baterias (BMS); cada célula precisa ser medida antes e depois do uso.
+  \item O capacitor de 470~\textmu F previsto junto ao servo ainda não foi instalado.
+  \item Na bancada, os dois motores giraram no mesmo sentido físico; montados espelhados no chassi, o carrinho giraria no lugar. A polaridade de um deles precisa ser corrigida na montagem.
+  \item A alimentação do ESP32 apresentou queda de cerca de 0,5~V por contatos de protoboard e será refeita com fios curtos e grossos.
+  \item A rede é aberta (sem TLS), aceitável apenas no laboratório isolado.
+\end{itemize}
 
 \chapter{Conclusão}
 
-O HIJACK cumpre o objetivo de tornar visível algo que normalmente é invisível. Quando o carrinho vira para o lado errado ou é sequestrado porque a senha era \texttt{1234}, o público entende na prática o que aconteceu com os refrigeradores na Europa; quando o carrinho para sozinho porque a rede caiu, entende por que sistemas críticos precisam de um modo seguro de operação quando a rede falha, como o Porto de Santos, que manteve navios e acessos funcionando por meios alternativos.
+Em simulação, no ESP32 real e na bancada, o sistema demonstrou todos os ataques e defesas previstos; a demonstração com o carrinho montado no chão ainda depende da montagem do chassi. A proposta é tornar visível algo que normalmente é invisível. Quando o carrinho vira para o lado errado ou é sequestrado porque a senha era \texttt{1234}, o público entende na prática o risco de equipamentos conectados com senhas fracas, como os refrigeradores atacados na Europa; quando o carrinho para sozinho porque a rede caiu, entende por que sistemas críticos precisam de um modo seguro de operação quando a rede falha, como o Porto de Santos, que manteve navios e acessos funcionando por meios alternativos.
 
-Os casos de 2025 e 2026 mostram que a IA acelerou os dois lados: ela orquestrou invasões (GTG-1002), ajudou a achar falhas antigas em poucos dias (PHP2Shell) e foi usada para avançar dentro de uma empresa (Binance), mas também foi usada para construir este projeto. As defesas básicas continuam decisivas: trocar senhas padrão, atualizar sistemas rapidamente, verificar a integridade do que se instala e projetar equipamentos para falhar de forma segura.
+Os casos de 2025 e 2026 mostram que a IA acelerou os dois lados: ela orquestrou invasões (GTG-1002), ajudou a achar falhas que estavam escondidas havia anos no PHP (PHP2Shell) e foi usada para avançar dentro de uma empresa (Binance), mas também foi usada para construir este projeto. As defesas básicas continuam decisivas: trocar senhas padrão, atualizar sistemas rapidamente, verificar a integridade do que se instala e projetar equipamentos para falhar de forma segura.
 
 Como próximos passos ficam a montagem no chassi, os testes no chão e no local da apresentação, e a avaliação de novas defesas.
 
