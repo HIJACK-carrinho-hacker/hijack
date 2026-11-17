@@ -2,3 +2,7 @@
 /esp32/
 .DS_Store
 .omc/
+relatorio/*.aux
+relatorio/*.log
+relatorio/*.out
+relatorio/*.toc
