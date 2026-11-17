@@ -6,3 +6,7 @@ relatorio/*.aux
 relatorio/*.log
 relatorio/*.out
 relatorio/*.toc
+relatorio/*.bbl
+relatorio/*.blg
+relatorio/*.lot
+relatorio/*.lof

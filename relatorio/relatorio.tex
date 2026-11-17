@@ -1,47 +1,81 @@
-\documentclass[12pt,a4paper]{article}
+\documentclass[12pt,openright,oneside,a4paper,english,brazil]{abntex2}
 
 \usepackage[T1]{fontenc}
 \usepackage[utf8]{inputenc}
-\usepackage[brazilian]{babel}
 \usepackage{lmodern}
 \usepackage{microtype}
-\usepackage[a4paper,top=3cm,left=3cm,bottom=2cm,right=2cm]{geometry}
-\usepackage{setspace}
 \usepackage{booktabs}
 \usepackage{tabularx}
 \usepackage{array}
 \usepackage{enumitem}
 \usepackage{csquotes}
 \usepackage{xurl}
-\usepackage[hidelinks]{hyperref}
+\usepackage{hyperref}
+\usepackage[alf]{abntex2cite}
 
-\onehalfspacing
-\setlength{\parindent}{1.25cm}
+\hypersetup{hidelinks}
 \setlist{nosep}
 \newcolumntype{L}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 
-\title{\textbf{HIJACK: carrinho hackeável para o ensino de segurança em sistemas ciberfísicos}\\[0.5em]\large Relatório final}
-\author{Pedro Nascimento de Paiva Fernandes Neto \\ Carlos Roberto de Miranda Gomes Neto \\ Élisson Rian Félix Simas \\ Gustavo Henrique Assunção Paiva \\ Marcelo Jorge Oliveira de Albuquerque Melo \\ Matheus Felipe Duarte Dionísio \\ João Gonçalves de Souza Neto}
-\date{Disciplina: Fundamentos de Circuito e Sistemas Controlados\\Professor: Alexandre Magnus Fernandes Guimarães\\[1em]Universidade Federal do Rio Grande do Norte (UFRN)\\Natal, novembro de 2026}
+\titulo{HIJACK: carrinho hackeável para o ensino de segurança em sistemas ciberfísicos}
+\autor{Pedro Nascimento de Paiva Fernandes Neto \\ Carlos Roberto de Miranda Gomes Neto \\ Élisson Rian Félix Simas \\ Gustavo Henrique Assunção Paiva \\ Marcelo Jorge Oliveira de Albuquerque Melo \\ Matheus Felipe Duarte Dionísio \\ João Gonçalves de Souza Neto}
+\local{Natal}
+\data{2026}
+\instituicao{Universidade Federal do Rio Grande do Norte}
+\tipotrabalho{Relatório técnico}
+\orientador[Professor:]{Alexandre Magnus Fernandes Guimarães}
+\preambulo{Relatório final apresentado à disciplina Fundamentos de Circuito e Sistemas Controlados da Universidade Federal do Rio Grande do Norte.}
+
+\renewcommand{\imprimircapa}{%
+  \begin{capa}%
+    \center
+    {\ABNTEXchapterfont\large UNIVERSIDADE FEDERAL DO RIO GRANDE DO NORTE}\par
+    \vspace*{0.3cm}
+    {\large Fundamentos de Circuito e Sistemas Controlados}\par
+    \vspace*{2cm}
+    {\ABNTEXchapterfont\large\imprimirautor}
+    \vfill
+    \begin{center}
+      \ABNTEXchapterfont\bfseries\LARGE\imprimirtitulo
+    \end{center}
+    \vfill
+    \large\imprimirlocal\par
+    \large\imprimirdata
+    \vspace*{1cm}
+  \end{capa}
+}
 
 \begin{document}
 
-\maketitle
+\pretextual
 
-\begin{abstract}
-\noindent O HIJACK é uma demonstração didática de cibersegurança em que um carrinho controlado por ESP32 é pilotado pelo celular e atacado, ao vivo, por uma equipe adversária. Cada ataque tem efeito físico visível (o carro vira para o lado errado, anda de ré, para ou é sequestrado), o que torna concretos conceitos como senha padrão, integridade, repetição, interceptação e disponibilidade. O projeto parte do cenário de 2025 e 2026, em que ataques assistidos por inteligência artificial (IA) e ataques a equipamentos conectados passaram a ter impacto direto no mundo físico e financeiro. Este relatório apresenta esse contexto, a metodologia, o sistema desenvolvido, os testes realizados e as limitações.
+\imprimircapa
+\imprimirfolhaderosto
 
-\noindent\textbf{Palavras-chave:} cibersegurança; sistemas ciberfísicos; IoT; inteligência artificial; ESP32; ensino.
-\end{abstract}
+\begin{resumo}
+O HIJACK é uma demonstração didática de cibersegurança em que um carrinho controlado por ESP32 é pilotado pelo celular e atacado, ao vivo, por uma equipe adversária. Cada ataque tem efeito físico visível (o carro vira para o lado errado, anda de ré, para ou é sequestrado), o que torna concretos conceitos como senha padrão, integridade, repetição, interceptação e disponibilidade. O projeto parte do cenário de 2025 e 2026, em que ataques assistidos por inteligência artificial (IA) e ataques a equipamentos conectados passaram a ter impacto direto no mundo físico e financeiro. Este relatório apresenta esse contexto, a metodologia, o sistema desenvolvido, os testes realizados e as limitações.
 
-\section{Introdução}
+\textbf{Palavras-chave}: cibersegurança. sistemas ciberfísicos. IoT. inteligência artificial. ESP32. ensino.
+\end{resumo}
+
+\pdfbookmark[0]{\listtablename}{lot}
+\listoftables*
+\cleardoublepage
+
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+
+\textual
+
+\chapter{Introdução}
 
 Ataques cibernéticos deixaram de afetar apenas dados. Em outubro e novembro de 2026, refrigeradores de supermercados europeus foram aquecidos remotamente a até 50~\textdegree C~\cite{aljazeera-geladeiras}; o maior porto do Brasil ficou sem sistemas digitais~\cite{sbt-santos}; e uma corretora de criptomoedas perdeu cerca de US\$~6,3 bilhões em minutos~\cite{techstartups-binance}. Ao mesmo tempo, a IA passou a ser usada pelos dois lados: para orquestrar invasões quase sem intervenção humana~\cite{anthropic-gtg1002} e para encontrar falhas críticas em softwares usados por milhões de sites~\cite{kratikal-php2shell}.
 
 Esses temas são difíceis de ensinar só com slides, porque o ataque costuma ser invisível. O HIJACK resolve isso com um objeto físico: um carrinho que obedece ao piloto até ser atacado. O público vê, no chão, o efeito de uma senha fraca ou de um comando adulterado, e vê também a defesa funcionando.
 
-\subsection{Objetivos}
+\section{Objetivos}
 
 \begin{itemize}
   \item Demonstrar, de forma segura e controlada, ataques típicos a dispositivos conectados.
@@ -49,7 +83,7 @@ Esses temas são difíceis de ensinar só com slides, porque o ataque costuma se
   \item Construir um sistema completo (carrinho, firmware, servidor e interfaces) que funcione numa rede local isolada.
 \end{itemize}
 
-\section{Contexto: ataques recentes e o papel da IA}
+\chapter{Contexto: ataques recentes e o papel da IA}\label{cap:contexto}
 
 A Tabela~\ref{tab:casos} resume os casos usados como referência. Em seguida, cada um é descrito brevemente, separando o que foi confirmado do que ainda está em apuração.
 
@@ -70,17 +104,18 @@ Supermercados na Europa & out--nov/2026 & Refrigeradores aquecidos até 50~\text
 Porto de Santos & 06/nov/2026 & Sistemas, site, internet e telefone fora do ar & Não confirmado \\
 \bottomrule
 \end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
 \end{table}
 
-\subsection{IA como operadora do ataque: campanha GTG-1002}
+\section{IA como operadora do ataque: campanha GTG-1002}
 
 Em novembro de 2025 a Anthropic relatou ter interrompido uma campanha de espionagem, atribuída a um grupo patrocinado pelo Estado chinês, em que o Claude Code foi usado como motor autônomo de invasão contra cerca de 30 organizações~\cite{anthropic-gtg1002,thn-gtg1002}. Os operadores enganaram o modelo dizendo que faziam testes de intrusão autorizados. A IA fez reconhecimento, busca de vulnerabilidades, exploração, coleta de credenciais e extração de dados, com humanos intervindo em 10 a 20\% do tempo. É o primeiro caso documentado de ataque em larga escala executado majoritariamente por um agente de IA.
 
-\subsection{IA na cadeia de suprimentos: LiteLLM}
+\section{IA na cadeia de suprimentos: LiteLLM}
 
 O LiteLLM é uma biblioteca Python que conecta aplicações a vários provedores de modelos de IA e, por isso, guarda chaves de API valiosas. Em 24 de março de 2026, as versões 1.82.7 e 1.82.8 foram publicadas no PyPI com um ladrão de credenciais, numa campanha do grupo TeamPCP que começou pelo comprometimento do scanner de segurança Trivy~\cite{helpnet-litellm,bleeping-litellm}. Na versão 1.82.8, um arquivo \texttt{.pth} fazia o código malicioso rodar em qualquer processo Python da máquina. Em 21 de outubro de 2026 o pacote foi comprometido de novo: a versão 1.107.0 ficou cerca de duas horas no ar e as credenciais roubadas foram testadas contra serviços de IA na nuvem (\emph{LLMjacking})~\cite{giskard-outubro}. O caso mostra que a própria infraestrutura de IA virou alvo.
 
-\subsection{PHP, GitLab e Node.js: falhas críticas no mesmo dia}
+\section{PHP, GitLab e Node.js: falhas críticas no mesmo dia}
 
 Em 21 de outubro de 2026 foram divulgadas, quase simultaneamente, três falhas graves em tecnologias que sustentam boa parte da web~\cite{averlon-cves}:
 
@@ -92,25 +127,25 @@ Em 21 de outubro de 2026 foram divulgadas, quase simultaneamente, três falhas g
 
 O resultado foi uma corrida de empresas para atualizar servidores, contêineres e pipelines de integração contínua. Nas fontes consultadas não foi encontrado registro de ataque de negação de serviço (DDoS) contra o GitLab nesse episódio; o risco relatado foi a invasão de instâncias auto-hospedadas sem atualização.
 
-\subsection{Binance: engenharia social e IA interna}
+\section{Binance: engenharia social e IA interna}
 
 Em 29 de outubro de 2026 a Binance teve cerca de US\$~6,3 bilhões retirados de suas carteiras quentes, o maior roubo de criptoativos registrado~\cite{bleeping-binance,techstartups-binance}. Segundo o relatório da empresa, o ataque começou meses antes: um engenheiro instalou uma ferramenta adulterada e, em setembro, outro recebeu uma falsa entrevista de emprego com um \enquote{teste de programação} contendo \emph{malware}. A partir desse computador e de uma ferramenta interna de IA, os invasores chegaram a outros engenheiros e a credenciais de implantação com acesso à infraestrutura de assinatura das carteiras. O FBI atribuiu o roubo ao grupo norte-coreano TraderTraitor. Cerca de US\$~2,85 bilhões foram congelados ou interceptados.
 
-\subsection{Supermercados na Europa: ataque ciberfísico}
+\section{Supermercados na Europa: ataque ciberfísico}
 
 Em outubro de 2026 centenas de supermercados na França tiveram os sistemas de refrigeração atacados; em 2 de novembro, mais de 100 lojas na Bélgica, Luxemburgo, Suécia, Irlanda e Estônia relataram geladeiras e freezers aquecidos, em alguns casos a 50~\textdegree C, com perda de alimentos e até incêndios~\cite{aljazeera-geladeiras,aljazeera-quem,cbs-geladeiras}. Foram afetadas redes como Delhaize, Carrefour, Coop e SuperValu. Especialistas apontaram controladores conectados à internet, gerenciados remotamente por terceiros, sem atualização e com senhas fáceis de adivinhar. Ninguém assumiu a autoria. No mesmo período, o NCSC britânico alertou que ataques potencializados por IA contra infraestrutura crítica devem se tornar rotina nos próximos anos~\cite{aljazeera-quem}.
 
 Este é o caso mais próximo do HIJACK: um equipamento físico controlado pela rede, com senha fraca, cujo comportamento é alterado à distância.
 
-\subsection{Porto de Santos}
+\section{Porto de Santos}
 
 Em 6 de novembro de 2026 a Autoridade Portuária de Santos detectou um ataque cibernético após uma queda de energia. Site, sistemas internos, internet e telefonia ficaram fora do ar por dias; a operação de navios e os acessos terrestres continuaram por meios alternativos~\cite{sbt-santos}. A Polícia Federal abriu inquérito, a Cesportos elevou o nível de proteção do porto para II e foi criado um gabinete de crise, com recuperação de cerca de 70\% dos \emph{backups} nas primeiras semanas~\cite{socmil-santos}. Causa, autoria e eventual vazamento de dados seguiam em apuração.
 
-\subsection{Síntese}
+\section{Síntese}
 
 Os casos mostram três tendências que o HIJACK procura ensinar: (i) a IA reduz o tempo entre descobrir e explorar uma falha; (ii) senhas padrão e sistemas sem atualização continuam sendo a porta de entrada mais comum; (iii) ataques a sistemas conectados têm consequências físicas e econômicas, não só perda de dados.
 
-\section{Metodologia}
+\chapter{Metodologia}
 
 O trabalho foi feito de forma incremental, em etapas pequenas e verificáveis, cada uma encerrada com testes e registro em \texttt{docs/progress.md}:
 
@@ -126,9 +161,9 @@ O desenvolvimento usou assistentes de programação com IA (Claude Code e Codex)
 
 Por segurança, o projeto adota três regras: nenhuma varredura ou exploração de rede real (os ataques são simulados no servidor); rede local isolada; e parada segura do carrinho que nenhum ataque consegue desligar.
 
-\section{Desenvolvimento}
+\chapter{Desenvolvimento}
 
-\subsection{Arquitetura}
+\section{Arquitetura}
 
 O sistema tem três partes, mantidas em repositórios separados:
 
@@ -140,13 +175,13 @@ O sistema tem três partes, mantidas em repositórios separados:
 
 O navegador nunca fala direto com o carrinho. O comando do piloto vai ao servidor, passa pelo \emph{pipeline} de ataques e defesas e só então é enviado ao ESP32. O servidor é a única autoridade sobre equipes, sessões e permissões.
 
-\subsection{Dinâmica da demonstração}
+\section{Dinâmica da demonstração}
 
 Na configuração padrão há um carrinho e duas equipes. A equipe A tem um piloto e um hacker defensor; a equipe B tem um hacker atacante. O atacante passa por quatro etapas guiadas (escanear, localizar, explorar e escolher o ataque) e então pode ativar os ataques. O defensor responde ativando as defesas.
 
-\subsection{Ataques, defesas e casos reais}
+\section{Ataques, defesas e casos reais}
 
-A Tabela~\ref{tab:ataques} relaciona os 12 controles de ataque do painel às defesas e aos casos da Seção~2. Na interface, cada controle tem um ícone de informação com dois textos: \enquote{Na vida real} e \enquote{No HIJACK}, sem instruções de como executar ataques.
+A Tabela~\ref{tab:ataques} relaciona os 12 controles de ataque do painel às defesas e aos casos do Capítulo~\ref{cap:contexto}. Na interface, cada controle tem um ícone de informação com dois textos: \enquote{Na vida real} e \enquote{No HIJACK}, sem instruções de como executar ataques.
 
 \begin{table}[htbp]
 \centering
@@ -165,17 +200,18 @@ Interceptar tráfego & Criptografia (simulada) & Roubo de chaves e segredos, com
 Atraso, perda de pacotes e link derrubado & Sem camada: o \emph{failsafe} para o carro & Indisponibilidade, como no Porto de Santos \\
 \bottomrule
 \end{tabularx}
+\fonte{Elaborado pelos autores (2026).}
 \end{table}
 
 O painel mostra um indicador de 0 a 4 camadas de defesa ativas. Ele conta camadas demonstradas e não mede segurança real.
 
-\subsection{O que é real e o que é simulado}
+\section{O que é real e o que é simulado}
 
 São proteções reais: autenticação por senha com hash argon2id e política de senha forte; revogação da sessão do piloto quando a senha muda; sessões em \emph{cookie} \texttt{HttpOnly}; autorização a cada mensagem; limite de tentativas contra força bruta; verificação de origem; e a parada segura em duas camadas (servidor e firmware).
 
 São simulações didáticas: as etapas de invasão, a integridade (não é HMAC), a proteção contra repetição e a criptografia (não é TLS). Essa separação é explicada ao público, para não passar a ideia de que o sistema é seguro só porque o indicador está cheio.
 
-\section{Resultados e validação}
+\chapter{Resultados e validação}
 
 \begin{itemize}
   \item \textbf{Software}: \emph{lint}, verificação de tipos, \emph{build} e 343 testes automatizados aprovados. Os testes de ponta a ponta direcionados aos ataques novos e aos textos educativos passaram (16 de 16, em desktop e celular emulado). A suíte completa de ponta a ponta não foi concluída após os últimos ajustes.
@@ -185,11 +221,11 @@ São simulações didáticas: as etapas de invasão, a integridade (não é HMAC
   \item \textbf{Rede}: o \emph{hotspot} do celular em 2,4~GHz ficou 30 minutos sem queda; a rede \emph{mesh} doméstica caía a cada cerca de 5 minutos e foi descartada.
 \end{itemize}
 
-\subsection{Limitações}
+\section{Limitações}
 
 O carrinho ainda não foi testado montado no chassi nem andando no chão; os testes físicos foram feitos com motores e servo soltos. A alimentação do ESP32 apresentou queda de cerca de 0,5~V por contatos de protoboard e será refeita. A rede é aberta (sem TLS), aceitável apenas no laboratório isolado.
 
-\section{Conclusão}
+\chapter{Conclusão}
 
 O HIJACK cumpre o objetivo de tornar visível algo que normalmente é invisível. Quando o carrinho vira para o lado errado ou é sequestrado porque a senha era \texttt{1234}, o público entende na prática o que aconteceu com os refrigeradores na Europa; quando o carrinho para sozinho porque a rede caiu, entende por que sistemas críticos precisam de um modo seguro de operação quando a rede falha, como o Porto de Santos, que manteve navios e acessos funcionando por meios alternativos.
 
@@ -197,37 +233,8 @@ Os casos de 2025 e 2026 mostram que a IA acelerou os dois lados: ela orquestrou 
 
 Como próximos passos ficam a montagem no chassi, os testes no chão e no local da apresentação, e a avaliação de novas defesas.
 
-\begin{thebibliography}{99}
-\small
+\postextual
 
-\bibitem{anthropic-gtg1002} ANTHROPIC. \emph{Disrupting the first reported AI-orchestrated cyber espionage campaign}. Nov. 2025. Disponível em: \url{https://assets.anthropic.com/m/ec212e6566a0d47/original/Disrupting-the-first-reported-AI-orchestrated-cyber-espionage-campaign.pdf}.
-
-\bibitem{thn-gtg1002} THE HACKER NEWS. \emph{Chinese hackers use Anthropic's AI to launch automated cyber espionage campaign}. Nov. 2025. Disponível em: \url{https://thehackernews.com/2025/11/chinese-hackers-use-anthropics-ai-to.html}.
-
-\bibitem{helpnet-litellm} HELP NET SECURITY. \emph{LiteLLM PyPI packages compromised in expanding TeamPCP supply chain attacks}. 25 mar. 2026. Disponível em: \url{https://www.helpnetsecurity.com/2026/03/25/teampcp-supply-chain-attacks/}.
-
-\bibitem{bleeping-litellm} BLEEPINGCOMPUTER. \emph{Popular LiteLLM PyPI package compromised in TeamPCP supply chain attack}. Mar. 2026. Disponível em: \url{https://bleepingcomputer.com/news/security/popular-litellm-pypi-package-compromised-in-teampcp-supply-chain-attack}.
-
-\bibitem{giskard-outubro} GISKARD. \emph{PHP2Shell, Node2Shell and LiteLLM supply chain exploit: are we exposed?} 28 out. 2026. Disponível em: \url{https://www.giskard.ai/knowledge/php2shell-node2shell-and-litellm-supply-chain-exploit}.
-
-\bibitem{averlon-cves} AVERLON. \emph{Four critical disclosures: PHP, Node.js, GitLab, and the Linux kernel}. Out. 2026. Disponível em: \url{https://www.averlon.ai/blog/php-nodejs-gitlab-critical-disclosures}.
-
-\bibitem{kratikal-php2shell} KRATIKAL. \emph{The PHP2Shell story: hidden for 14 years, found by AI in 1 week}. 2026. Disponível em: \url{https://kratikal.com/blog/php2shell-story/}.
-
-\bibitem{bleeping-binance} BLEEPINGCOMPUTER. \emph{Binance probes potential \$5.8 billion crypto-theft hack}. 29 out. 2026. Disponível em: \url{https://bleepingcomputer.com/news/security/binance-probes-potential-58-billion-crypto-theft-hack}.
-
-\bibitem{techstartups-binance} TECH STARTUPS. \emph{Binance says hackers used fake job interviews and AI tools to steal \$6.3 billion in record crypto heist}. 3 nov. 2026. Disponível em: \url{https://techstartups.com/2026/11/03/binance-says-hackers-used-fake-job-interviews-and-ai-tools-to-steal-6-3-billion-in-record-crypto-heist/}.
-
-\bibitem{aljazeera-geladeiras} AL JAZEERA. \emph{Suspected cyberattacks trigger supermarket fridge failures across Europe}. 2 nov. 2026. Disponível em: \url{https://www.aljazeera.com/news/2026/11/2/freezers-in-sweden-belgium-overheat-following-possible-cyberattacks}.
-
-\bibitem{aljazeera-quem} AL JAZEERA. \emph{Very cold war: who's attacking Europe's supermarket freezers?} 3 nov. 2026. Disponível em: \url{https://www.aljazeera.com/news/2026/11/3/very-cold-war-whos-attacking-europes-supermarket-freezers}.
-
-\bibitem{cbs-geladeiras} CBS NEWS. \emph{More grocery stores in Europe report fridge and freezer temperature spikes as apparent cyberattacks continue}. Nov. 2026. Disponível em: \url{https://www.cbsnews.com/news/europe-grocery-store-refrigerator-freezer-cyberattack-hack-food-wasted/}.
-
-\bibitem{sbt-santos} SBT NEWS. \emph{Porto de Santos confirma que sofreu ataque hacker}. 10 nov. 2026. Disponível em: \url{https://sbtnews.sbt.com.br/noticia/brasil/porto-de-santos-confirma-que-sofreu-ataque-hacker}.
-
-\bibitem{socmil-santos} SOCIEDADE MILITAR. \emph{Após ataque hacker, maior porto do Brasil cria gabinete de crise e recupera 70\% dos backups}. Nov. 2026. Disponível em: \url{https://www.sociedademilitar.com.br/2026/11/apos-ataque-hacker-maior-porto-do-brasil-cria-gabinete-de-crise-com-9-representantes-recupera-70-dos-backups-e-eleva-a-seguranca-dos-acessos-enquanto-pf-investiga-nbd.html}.
-
-\end{thebibliography}
+\bibliography{referencias}
 
 \end{document}
