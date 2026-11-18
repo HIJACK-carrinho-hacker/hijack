@@ -129,6 +129,7 @@ PHP2Shell, GitLab e Node.js & 21/out/2026 & Falhas críticas de execução remot
 Binance & 29/out/2026 & Cerca de US\$~6,3 bi retirados de carteiras quentes & Ferramenta interna de IA usada para avançar na rede \\
 Supermercados na Europa & out--nov/2026 & Refrigeradores aquecidos até 50~\textdegree C & Não confirmado \\
 Porto de Santos & 06/nov/2026 & Sistemas, site, internet e telefone fora do ar & Não confirmado \\
+Java4Shell & 17/nov/2026 & Falha crítica de execução remota de código no Java & Prova de conceito gerada com IA em cerca de 2~h \\
 \bottomrule
 \end{tabularx}
 \fonte{Elaborado pelos autores (2026).}
@@ -165,6 +166,12 @@ Este é o caso mais próximo do HIJACK: um equipamento físico controlado pela r
 \section{Porto de Santos}
 
 Em 6 de novembro de 2026, após uma queda de energia, os sistemas da Autoridade Portuária de Santos saíram do ar. Site, sistemas internos e serviços usados por clientes foram afetados; internet e telefonia voltaram em 9 de novembro, e em 10 de novembro a autoridade confirmou o ataque cibernético. A movimentação de navios e cargas e os acessos terrestres continuaram, com atendimento por meios alternativos~\cite{sbt-santos,carta-santos}. A Polícia Federal abriu inquérito, e a comissão de segurança portuária de São Paulo elevou o nível de proteção do porto para 2, ampliando a inspeção de cargas~\cite{carta-santos}. Em 12 de novembro, cerca de 70\% das cópias de segurança tinham sido recuperadas, mas parte dos sistemas seguia afetada~\cite{times-santos}. Causa, autoria e eventual vazamento de dados seguiam em apuração.
+
+\section{Java4Shell: falha crítica no Java}
+
+Em 17 de novembro de 2026 foi divulgada a CVE-2026-114938, apelidada de Java4Shell: uma corrupção de memória no decodificador Base64 otimizado da máquina virtual Java (OpenJDK). Uma entrada Base64 com uma quantidade inesperada de caracteres de preenchimento (\texttt{=}) faz o cálculo de tamanho errar, e o Java escreve além do fim de um vetor na memória, o que pode permitir que um atacante sem login execute código no servidor~\cite{wiz-java4shell}. A falha só aparece em processadores x86-64 com as instruções AVX-512 VBMI (Intel Ice Lake ou mais recentes e AMD Zen~4 ou mais recentes) e afeta as linhas Java 17 (a partir da 17.0.6), 21, 25 e 27. Foi descoberta pela empresa Calif, a mesma que participou da descoberta do PHP2Shell, e as correções saíram no mesmo dia~\cite{tenable-java4shell}.
+
+O caso mostra de novo a IA acelerando os dois lados: a Wiz usou sua ferramenta de pesquisa com IA para criar uma prova de conceito em cerca de duas horas, antes mesmo de os detalhes completos serem publicados, e a demonstrou contra Jenkins, Confluence e Apache Tomcat, aplicações muito usadas por empresas~\cite{wiz-java4shell}. Até 18 de novembro havia relatos de tentativas de exploração, sem confirmação de ataque bem-sucedido. Algumas distribuições Linux ainda não tinham publicado a correção; como medida provisória, é possível desligar o decodificador otimizado com uma opção de inicialização da JVM~\cite{tenable-java4shell}.
 
 \section{Síntese}
 
@@ -556,7 +563,7 @@ Sequestro & Comandos do piloto recusados; o atacante dirigiu; STOP ALL parou em 
 
 Em simulação, no ESP32 real e na bancada, o sistema demonstrou todos os ataques e defesas previstos; a demonstração com o carrinho montado no chão ainda depende da montagem do chassi. A proposta é tornar visível algo que normalmente é invisível. Quando o carrinho vira para o lado errado ou é sequestrado porque a senha era \texttt{1234}, o público entende na prática o risco de equipamentos conectados com senhas fracas, como os refrigeradores atacados na Europa; quando o carrinho para sozinho porque a rede caiu, entende por que sistemas críticos precisam de um modo seguro de operação quando a rede falha, como o Porto de Santos, que manteve navios e acessos funcionando por meios alternativos.
 
-Os casos de 2025 e 2026 mostram que a IA acelerou os dois lados: ela orquestrou invasões (GTG-1002), ajudou a achar falhas que estavam escondidas havia anos no PHP (PHP2Shell) e foi usada para avançar dentro de uma empresa (Binance), mas também foi usada para construir este projeto. As defesas básicas continuam decisivas: trocar senhas padrão, atualizar sistemas rapidamente, verificar a integridade do que se instala e projetar equipamentos para falhar de forma segura.
+Os casos de 2025 e 2026 mostram que a IA acelerou os dois lados: ela orquestrou invasões (GTG-1002), ajudou a achar falhas que estavam escondidas havia anos no PHP (PHP2Shell), gerou em cerca de duas horas uma prova de conceito para uma falha no Java (Java4Shell) e foi usada para avançar dentro de uma empresa (Binance), mas também foi usada para construir este projeto. As defesas básicas continuam decisivas: trocar senhas padrão, atualizar sistemas rapidamente, verificar a integridade do que se instala e projetar equipamentos para falhar de forma segura.
 
 Como próximos passos ficam a montagem no chassi, os testes no chão e no local da apresentação, e a avaliação de novas defesas.
 
