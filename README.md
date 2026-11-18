@@ -55,6 +55,10 @@ Para compilar é preciso o TeX Live com o `abntex2` (no Arch: `sudo pacman -S te
 pdflatex relatorio && bibtex relatorio && pdflatex relatorio && pdflatex relatorio
 ```
 
+## Apresentação
+
+Os slides da apresentação (Beamer, tema metropolis, 16:9) estão em `apresentacao/`: `apresentacao.tex`, `imagens/` e `apresentacao.pdf`. Compilar dentro da pasta com `pdflatex apresentacao` duas vezes. As fotos de componentes, do porto, do supermercado e os logos vêm do Wikimedia Commons, com autor e licença em cada slide; as imagens do carrinho são renderizações do modelo 3D.
+
 ## Convenções
 
 Leia `AGENTS.md` (regras para quem continuar o projeto, inclusive agentes de IA). Estado e pendências: `web/docs/progress.md` e `web/docs/acceptance.md`.

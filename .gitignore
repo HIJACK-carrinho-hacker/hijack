@@ -10,3 +10,10 @@ relatorio/*.bbl
 relatorio/*.blg
 relatorio/*.lot
 relatorio/*.lof
+apresentacao/*.aux
+apresentacao/*.log
+apresentacao/*.nav
+apresentacao/*.out
+apresentacao/*.snm
+apresentacao/*.toc
+apresentacao/*.vrb

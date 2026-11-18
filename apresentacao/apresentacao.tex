@@ -1,0 +1,546 @@
+\documentclass[aspectratio=169,10pt]{beamer}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazilian]{babel}
+\usepackage{lmodern}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{amsmath}
+\usepackage{csquotes}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\usetheme[progressbar=frametitle,numbering=fraction]{metropolis}
+\definecolor{verde}{HTML}{1F9D55}
+\definecolor{escuro}{HTML}{1B2430}
+\definecolor{vermelho}{HTML}{C0392B}
+\setbeamercolor{frametitle}{bg=escuro,fg=white}
+\setbeamercolor{progress bar}{fg=verde,bg=escuro!30}
+\setbeamercolor{title separator}{fg=verde}
+\setbeamercolor{alerted text}{fg=vermelho}
+\setbeamercolor{block title}{bg=verde!15,fg=escuro}
+\setbeamercolor{block body}{bg=verde!5}
+
+\newcolumntype{L}{>{\raggedright\arraybackslash}X}
+\newcommand{\credito}[1]{{\tiny\color{gray}#1}}
+\newcommand{\ideia}[1]{\par\vfill\noindent\colorbox{verde!12}{\parbox{\dimexpr\linewidth-2\fboxsep\relax}{\small\strut #1\strut}}}
+
+\tikzset{
+  caixa/.style={draw=escuro, rounded corners, align=center, minimum height=0.9cm, inner sep=3pt, fill=white, font=\small},
+  seta/.style={-{Stealth}, thick, color=escuro}
+}
+
+\title{HIJACK: carrinho hackeável para o ensino de cibersegurança}
+\subtitle{Fundamentos de Circuitos e Sistemas Controlados}
+\author{\scriptsize
+\begin{tabular}{@{}ll@{}}
+Pedro Nascimento de Paiva Fernandes Neto & Marcelo Jorge Oliveira de Albuquerque Melo \\
+Carlos Roberto de Miranda Gomes Neto & Matheus Felipe Duarte Dionísio \\
+Élisson Rian Félix Simas & João Gonçalves de Souza Neto \\
+Gustavo Henrique Assunção Paiva & \\
+\end{tabular}}
+\institute{\small Universidade Federal do Rio Grande do Norte (UFRN)\\Professor: Alexandre Magnus Fernandes Guimarães}
+\date{\small Natal, novembro de 2026}
+
+\begin{document}
+
+\begin{frame}[plain]
+\begin{columns}[c]
+\column{0.58\textwidth}
+{\LARGE\bfseries\color{escuro} HIJACK}\\[2pt]
+{\large Carrinho hackeável para o ensino de cibersegurança}\\[-2pt]
+{\color{verde}\rule{\linewidth}{1.2pt}}\\[4pt]
+\scriptsize
+Pedro Nascimento de Paiva Fernandes Neto\\
+Carlos Roberto de Miranda Gomes Neto\\
+Élisson Rian Félix Simas\\
+Gustavo Henrique Assunção Paiva\\
+Marcelo Jorge Oliveira de Albuquerque Melo\\
+Matheus Felipe Duarte Dionísio\\
+João Gonçalves de Souza Neto\\[8pt]
+\footnotesize
+\textbf{Fundamentos de Circuitos e Sistemas Controlados}\\
+Professor: Alexandre Magnus Fernandes Guimarães\\
+Universidade Federal do Rio Grande do Norte (UFRN)\\
+Natal, novembro de 2026
+\column{0.4\textwidth}
+\centering
+\includegraphics[width=\linewidth]{imagens/perspectiva_frente.jpg}\\[2pt]
+\credito{Modelo 3D do carrinho, elaborado pela equipe}
+\end{columns}
+\end{frame}
+
+\begin{frame}{Roteiro}
+\begin{enumerate}
+  \item Por que falar de cibersegurança agora
+  \item Ataques recentes, com e sem inteligência artificial
+  \item O jogo HIJACK: papéis, ataques e defesas
+  \item Como o carrinho e o sistema funcionam
+  \item Resultados, limitações e lições
+\end{enumerate}
+\ideia{Começamos pelo mundo real e terminamos no carrinho: cada ataque do jogo tem um paralelo em algo que aconteceu.}
+\end{frame}
+
+\section{Contexto}
+
+\begin{frame}{Os ataques saíram da tela}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=3.3cm,keepaspectratio]{imagens/freezer_supermercado.jpg}\\
+\credito{Foto ilustrativa: Alexis Jazz, CC BY 4.0, Wikimedia Commons}\\[4pt]
+\small Supermercados na Europa: freezers aquecidos remotamente a até 50~°C
+\column{0.48\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=3.3cm,keepaspectratio]{imagens/porto_santos.jpg}\\
+\credito{Foto: Claus Bunks (Afrobrasil), CC BY 3.0, Wikimedia Commons}\\[4pt]
+\small Porto de Santos: sistemas da autoridade portuária fora do ar
+\end{columns}
+\ideia{Hoje um ataque não rouba só dados: ele estraga comida, atrasa um porto e mexe com equipamentos físicos.}
+\end{frame}
+
+\begin{frame}{A IA mudou dos dois lados}
+\begin{columns}[T]
+\column{0.6\textwidth}
+\textbf{No ataque}
+\small
+\begin{itemize}
+  \item GTG-1002 (2025): o Claude Code foi usado para atacar cerca de 30 organizações, fazendo de 80 a 90\% do trabalho
+  \item Binance (2026): os invasores usaram uma ferramenta interna de IA para avançar dentro da empresa
+\end{itemize}
+\textbf{Na defesa e na pesquisa}
+\begin{itemize}
+  \item PHP2Shell: falhas antigas do PHP encontradas com ajuda de IA
+  \item Java4Shell: prova de conceito criada com IA em cerca de 2~h
+\end{itemize}
+\column{0.36\textwidth}
+\centering
+\vspace{1cm}
+\includegraphics[width=0.9\linewidth]{imagens/logo_anthropic.png}\\
+\credito{Logo: Anthropic, domínio público}
+\end{columns}
+\ideia{A IA encurta o tempo entre descobrir uma falha e explorá-la. Quem defende também precisa ser mais rápido.}
+\end{frame}
+
+\begin{frame}{Supermercados na Europa}
+\begin{columns}[T]
+\column{0.55\textwidth}
+\small
+\begin{itemize}
+  \item Out/2026: centenas de lojas na França
+  \item 1º e 2/nov: Bélgica, Luxemburgo, Suécia, Irlanda e Estônia
+  \item Geladeiras e freezers aquecidos a até 50~°C; comida perdida
+  \item Especialistas apontam controladores na internet, sem atualização e com senhas fáceis
+  \item Ninguém assumiu a autoria
+\end{itemize}
+\column{0.4\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=3.6cm,keepaspectratio]{imagens/freezer_supermercado.jpg}\\
+\credito{Alexis Jazz, CC BY 4.0, Wikimedia Commons}
+\end{columns}
+\ideia{É o caso mais parecido com o HIJACK: um equipamento físico controlado pela rede, mudado à distância.}
+\end{frame}
+
+\begin{frame}{Porto de Santos}
+\begin{columns}[T]
+\column{0.55\textwidth}
+\small
+\begin{itemize}
+  \item 6/nov/2026: sistemas caem após uma queda de energia
+  \item 10/nov: ataque confirmado; Polícia Federal abre inquérito
+  \item Proteção do porto elevada ao nível 2
+  \item Navios, cargas e acessos continuaram, com meios alternativos
+  \item 12/nov: cerca de 70\% dos backups recuperados
+\end{itemize}
+\column{0.4\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=3.6cm,keepaspectratio]{imagens/porto_santos.jpg}\\
+\credito{Claus Bunks (Afrobrasil), CC BY 3.0, Wikimedia Commons}
+\end{columns}
+\ideia{Lição: quando a rede cai, o sistema precisa continuar em um modo seguro. No carrinho, isso é parar sozinho.}
+\end{frame}
+
+\begin{frame}{Binance: US\$ 6,3 bilhões}
+\begin{columns}[c]
+\column{0.68\textwidth}
+\begin{tikzpicture}[node distance=0.35cm, every node/.style={font=\footnotesize}]
+\node[caixa, text width=6.6cm] (a) {\textbf{Jun}: funcionário instala ferramenta de programação adulterada};
+\node[caixa, text width=6.6cm, below=of a] (b) {\textbf{Set}: entrevista de emprego falsa; a \enquote{tarefa} trazia código malicioso};
+\node[caixa, text width=6.6cm, below=of b] (c) {\textbf{20/out}: com uma ferramenta interna de IA, chegam aos desenvolvedores das carteiras};
+\node[caixa, text width=6.6cm, below=of c, draw=vermelho, very thick] (d) {\textbf{29/out}: saque das carteiras quentes};
+\draw[seta] (a) -- (b); \draw[seta] (b) -- (c); \draw[seta] (c) -- (d);
+\end{tikzpicture}
+\column{0.28\textwidth}
+\centering
+\includegraphics[width=0.75\linewidth]{imagens/logo_binance.png}\\
+\credito{Logo: Binance, domínio público}\\[6pt]
+\small FBI atribui ao grupo norte-coreano TraderTraitor
+\end{columns}
+\ideia{O ataque começou em uma pessoa, não em um computador. Engenharia social continua sendo a porta de entrada.}
+\end{frame}
+
+\begin{frame}{Falhas em softwares do dia a dia}
+\begin{columns}[c]
+\column{0.62\textwidth}
+\begin{itemize}
+  \item \textbf{21/out}: três falhas graves no mesmo dia
+  \begin{itemize}
+    \item PHP2Shell: achada com IA e explorada antes da correção
+    \item GitLab: execução de código sem login
+    \item Node.js: falha relatada pela segurança do OpenAI Codex
+  \end{itemize}
+  \item \textbf{17/nov}: Java4Shell, no Java 17 em diante, em processadores com AVX-512
+  \item \textbf{LiteLLM}: pacote de IA publicado com ladrão de credenciais (mar e out/2026)
+\end{itemize}
+\column{0.34\textwidth}
+\centering
+\includegraphics[height=0.9cm]{imagens/logo_php.png}\hspace{4pt}
+\includegraphics[height=0.9cm]{imagens/logo_gitlab.png}\\[6pt]
+\includegraphics[height=0.9cm]{imagens/logo_nodejs.png}\hspace{4pt}
+\includegraphics[height=1.4cm]{imagens/java_duke.png}\\
+\credito{Logos e mascote: Wikimedia Commons (domínio público, MIT e BSD)}
+\end{columns}
+\ideia{Quase toda empresa usa algum desses. Atualizar rápido virou parte da segurança.}
+\end{frame}
+
+\begin{frame}{Nas manchetes}
+\small
+\begin{tabularx}{\textwidth}{@{}L>{\raggedleft\arraybackslash}p{3.2cm}@{}}
+\toprule
+\enquote{Hackers usaram IA da Anthropic em ciberataque global} & Tecnoblog, 14/11/2025 \\
+\enquote{Hackers sabotam freezers de supermercados na Europa} & Tecnoblog, 02/11/2026 \\
+\enquote{PHP2Shell: quando uma requisição basta para dominar um servidor} & Alura, 30/10/2026 \\
+\enquote{IA e entrevista de emprego falsa: o que está por trás do ataque à Binance} & StartSe, 04/11/2026 \\
+\enquote{PF abre inquérito para investigar ataque hacker contra sistemas do Porto de Santos} & CartaCapital, 10/11/2026 \\
+\enquote{CVE-2026-114938 OpenJDK RCE (Java4Shell)} & Wiz Research, 17/11/2026 \\
+\bottomrule
+\end{tabularx}
+\ideia{Todos esses casos são das últimas semanas. O tema não é teórico.}
+\end{frame}
+
+\begin{frame}{O que esses casos têm em comum}
+\begin{enumerate}
+  \item \textbf{A IA acelera}: descobrir e explorar uma falha ficou mais rápido
+  \item \textbf{O básico ainda falha}: senha padrão e sistema sem atualização
+  \item \textbf{O impacto é físico}: comida, porto, dinheiro, não só dados
+\end{enumerate}
+\ideia{O HIJACK foi feito para mostrar essas três ideias de um jeito que o público consiga ver.}
+\end{frame}
+
+\section{O jogo HIJACK}
+
+\begin{frame}{A proposta}
+\begin{columns}[c]
+\column{0.5\textwidth}
+\begin{itemize}
+  \item Um carrinho com ESP32 pilotado pelo celular
+  \item Uma equipe tenta tomar o controle; outra tenta defender
+  \item Cada ataque tem efeito visível: o carrinho vira errado, anda de ré, para ou é sequestrado
+  \item Rede local isolada; ataques simulados no próprio sistema
+\end{itemize}
+\column{0.46\textwidth}
+\centering
+\includegraphics[width=\linewidth]{imagens/perspectiva_frente.jpg}\\
+\credito{Modelo 3D do carrinho, elaborado pela equipe (Autodesk Fusion)}
+\end{columns}
+\ideia{Ataque costuma ser invisível. Aqui ele aparece no carrinho e no telão.}
+\end{frame}
+
+\begin{frame}{Papéis e modalidades}
+\centering
+\begin{tikzpicture}[node distance=0.5cm]
+\node[caixa, text width=3.2cm, fill=verde!15] (p) {\textbf{Piloto}\\celular, joystick};
+\node[caixa, text width=3.2cm, fill=verde!15, right=of p] (d) {\textbf{Hacker de defesa}\\liga as proteções};
+\node[caixa, text width=3.2cm, fill=vermelho!15, right=of d] (a) {\textbf{Hacker de ataque}\\tenta tomar o controle};
+\node[caixa, text width=3.2cm, below=0.6cm of d] (o) {\textbf{Operador e telão}\\conduz e mostra a partida};
+\node[above=0.15cm of d, font=\small\bfseries, color=verde] {Equipe A};
+\node[above=0.15cm of a, font=\small\bfseries, color=vermelho] {Equipe B};
+\end{tikzpicture}
+\vspace{0.3cm}
+\begin{itemize}
+  \item \textbf{1 carrinho}: no mínimo 3 jogadores (piloto, defesa e ataque)
+  \item \textbf{2 carrinhos}: 4 jogadores; cada hacker ataca o adversário e defende o próprio
+\end{itemize}
+\ideia{Não há placar: o objetivo é ver o efeito de cada ataque e de cada defesa.}
+\end{frame}
+
+\begin{frame}{Como se joga}
+\centering
+\begin{tikzpicture}[node distance=0.25cm, every node/.style={font=\footnotesize}]
+\node[caixa, text width=2.3cm] (s1) {\textbf{1. Largada}\\piloto dirige};
+\node[caixa, text width=2.3cm, right=of s1] (s2) {\textbf{2. Invasão}\\4 etapas guiadas};
+\node[caixa, text width=2.3cm, right=of s2, fill=vermelho!15] (s3) {\textbf{3. Ataque}\\carrinho sai do controle};
+\node[caixa, text width=2.3cm, right=of s3, fill=verde!15] (s4) {\textbf{4. Defesa}\\proteções ligadas};
+\node[caixa, text width=2.3cm, right=of s4] (s5) {\textbf{5. Fim}\\métricas};
+\draw[seta] (s1) -- (s2); \draw[seta] (s2) -- (s3); \draw[seta] (s3) -- (s4); \draw[seta] (s4) -- (s5);
+\end{tikzpicture}
+\vspace{0.4cm}
+\begin{itemize}
+  \item Invasão: escanear, identificar o alvo, explorar a falha e modificar comandos
+  \item A senha começa como \texttt{1234}, de propósito
+  \item O telão compara o comando pedido pelo piloto com o que o carrinho recebeu
+\end{itemize}
+\ideia{O público vê \enquote{comando alterado no caminho} quando o ataque funciona.}
+\end{frame}
+
+\begin{frame}{Os 12 ataques}
+\small
+\begin{tabularx}{\textwidth}{@{}p{2.3cm}L@{}}
+\toprule
+\textbf{Grupo} & \textbf{Ataques e efeito} \\
+\midrule
+Sabotagem & Inverter frente/ré e esquerda/direita, viés e travamento da direção, atraso, perda de pacotes, replay \\
+Espionagem & Interceptar o tráfego; quebrar a senha com uma lista de senhas comuns \\
+Canal & Derrubar o link por 5~s; telemetria falsa (o defensor vê o carrinho obedecendo) \\
+Controle & \alert{Sequestro}: o atacante passa a dirigir o carrinho \\
+\bottomrule
+\end{tabularx}
+\ideia{Todos são simulados no servidor: nenhuma rede real é invadida. Os textos de ajuda explicam o caso real sem ensinar a atacar.}
+\end{frame}
+
+\begin{frame}{As 4 defesas}
+\small
+\begin{tabularx}{\textwidth}{@{}p{3.3cm}p{1.8cm}L@{}}
+\toprule
+\textbf{Defesa} & \textbf{Tipo} & \textbf{O que bloqueia} \\
+\midrule
+Trocar a senha padrão & \textbf{Real} & Quebra de senha e sequestro \\
+Integridade & Simulada & Inversões, viés, travamento e telemetria falsa \\
+Proteção contra repetição & Simulada & Replay \\
+Criptografia & Simulada & Deixa ilegível o tráfego interceptado \\
+\bottomrule
+\end{tabularx}
+\vspace{0.3cm}
+\begin{itemize}
+  \item Atraso, perda e queda do link não têm defesa: o carrinho só para em segurança
+  \item Trocar a senha \alert{não} impede as inversões
+\end{itemize}
+\ideia{Senha protege contra quem não tem acesso. Não protege contra alteração no caminho.}
+\end{frame}
+
+\section{Como funciona}
+
+\begin{frame}{Arquitetura}
+\centering
+\begin{tikzpicture}[font=\footnotesize]
+\node[caixa, text width=2.2cm] (piloto) at (0,2.1) {Celular (piloto)};
+\node[caixa, text width=2.2cm] (hacker) at (0,0.95) {Notebooks (hackers)};
+\node[caixa, text width=2.2cm] (oper) at (0,-0.2) {Operador};
+\node[caixa, text width=2.2cm] (telao) at (0,-1.35) {Telão};
+\node[caixa, text width=3.2cm, minimum height=4.3cm, fill=verde!10] (srv) at (4.6,0.37) {\textbf{Servidor}\\[2pt]sessões e permissões\\ataques e defesas\\controle do carrinho\\simulador};
+\node[caixa, text width=2.2cm] (esp) at (9.3,0.37) {ESP32 (firmware)};
+\node[caixa, text width=2.2cm] (mot) at (9.3,2.1) {L298N e motores TT};
+\node[caixa, text width=2.2cm] (servo) at (9.3,-1.35) {Servo SG90};
+\draw[seta, <->] (piloto) -- (srv.west |- piloto);
+\draw[seta, <->] (hacker) -- (srv.west |- hacker);
+\draw[seta, <->] (oper) -- (srv.west |- oper);
+\draw[seta] (srv.west |- telao) -- (telao);
+\draw[seta, <->] (srv) -- node[above, font=\scriptsize]{WebSocket} node[below, font=\scriptsize]{Wi-Fi} (esp);
+\draw[seta] (esp) -- node[right, font=\scriptsize]{PWM} (mot);
+\draw[seta] (esp) -- node[right, font=\scriptsize]{PWM 50 Hz} (servo);
+\end{tikzpicture}
+\ideia{O navegador nunca fala direto com o carrinho: tudo passa pelo servidor, que é quem aplica os ataques e as defesas.}
+\end{frame}
+
+\begin{frame}{Componentes}
+\begin{columns}[T]
+\column{0.32\textwidth}
+\centering
+\includegraphics[height=2.4cm]{imagens/esp32.jpg}\\
+\textbf{ESP32-WROOM-32}\\\small Wi-Fi e dois núcleos\\
+\credito{Brian Krent, CC BY-SA 4.0, Wikimedia Commons}
+\column{0.32\textwidth}
+\centering
+\includegraphics[height=2.4cm]{imagens/l298n.jpg}\\
+\textbf{Ponte H L298N}\\\small sentido e velocidade dos motores\\
+\credito{Luiz Augusto S. de Mesquita, CC0, Wikimedia Commons}
+\column{0.32\textwidth}
+\centering
+\includegraphics[height=2.4cm]{imagens/sg90.jpg}\\
+\textbf{Servo SG90}\\\small direção das rodas da frente\\
+\credito{Suyash Dwivedi, CC BY-SA 4.0, Wikimedia Commons}
+\end{columns}
+\vspace{0.3cm}
+\small Também: 2 motores TT amarelos com redução 1:48 (3 a 6~V), regulador LM2596 ajustado em 5~V e 2 baterias 18650 em série (7,4~V).
+\ideia{Fotos ilustrativas dos mesmos modelos de peça usados no carrinho.}
+\end{frame}
+
+\begin{frame}{Estrutura impressa em 3D}
+\begin{columns}[T]
+\column{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{imagens/detalhe_eletronica.jpg}\\
+\small Eletrônica nas bandejas
+\column{0.49\textwidth}
+\centering
+\includegraphics[width=\linewidth]{imagens/vista_inferior.jpg}\\
+\small Por baixo: motores, direção e baterias
+\end{columns}
+\vspace{0.2cm}
+\centering\credito{Modelo 3D elaborado pela equipe no Autodesk Fusion; peças impressas em 3D}
+\ideia{Formato de carro de verdade: tração atrás e direção na frente. Base de 200 × 140~mm.}
+\end{frame}
+
+\begin{frame}{Direção}
+\begin{columns}[c]
+\column{0.5\textwidth}
+\begin{itemize}
+  \item Servo move uma alavanca e duas barras (Ackermann simplificado)
+  \item Comando de $-100\%$ a $+100\%$ vira até $\pm45^\circ$ no servo
+  \item Limite abaixo do batente mecânico ($\approx48^\circ$)
+  \item Raio de curva previsto: cerca de 27~cm
+\end{itemize}
+\column{0.46\textwidth}
+\centering
+\includegraphics[width=\linewidth]{imagens/curva_direita.jpg}\\
+\credito{Modelo 3D: servo a 45°, roda interna $\approx23^\circ$, externa $\approx17^\circ$}
+\end{columns}
+\ideia{Na curva, a roda de dentro esterça mais que a de fora, como em um carro de verdade.}
+\end{frame}
+
+\begin{frame}{Alimentação e PWM}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{itemize}
+  \item Bateria 7,4~V (8,4~V cheia) $\rightarrow$ L298N $\rightarrow$ motores
+  \item Bateria $\rightarrow$ regulador 5~V $\rightarrow$ ESP32 e servo
+  \item GND comum a todos
+  \item Controle em malha aberta: sem sensores de velocidade
+\end{itemize}
+\column{0.46\textwidth}
+\begin{block}{Por que o PWM vai só até 80\%}
+\[
+V_{\text{motor}} \approx (8{,}4 - 2) \times 0{,}8 \approx 5{,}1~\text{V}
+\]
+\small A L298N perde cerca de 2~V; os motores são de até 6~V.
+\end{block}
+\end{columns}
+\ideia{O PWM liga e desliga o motor muito rápido; a fração do tempo ligado define a tensão média.}
+\end{frame}
+
+\begin{frame}{Comunicação ESP32 e servidor}
+\begin{columns}[T]
+\column{0.52\textwidth}
+\small
+\begin{enumerate}
+  \item ESP32 se identifica com um segredo
+  \item Servidor manda comandos numerados: tração, direção e validade de 400~ms
+  \item ESP32 confirma o que aplicou
+  \item Telemetria a cada 500~ms
+\end{enumerate}
+\column{0.44\textwidth}
+\begin{block}{Parada segura}
+\small
+\begin{itemize}
+  \item Soltar o joystick: para na hora
+  \item Sem comando novo em 400~ms: para sozinho
+  \item Vale no servidor e no ESP32
+\end{itemize}
+\end{block}
+\end{columns}
+\ideia{Os ataques acontecem no servidor. Para o ESP32, um ataque é só um comando diferente ou um comando que não chega.}
+\end{frame}
+
+\begin{frame}{O que é real e o que é simulado}
+\begin{columns}[T]
+\column{0.48\textwidth}
+\textbf{\color{verde}Real}
+\begin{itemize}\small
+  \item Senha com \emph{hash} argon2id
+  \item Uma vaga por papel
+  \item Permissão checada a cada mensagem
+  \item Limite contra força bruta
+  \item Parada automática por validade
+\end{itemize}
+\column{0.48\textwidth}
+\textbf{\color{vermelho}Simulado}
+\begin{itemize}\small
+  \item Etapas de invasão
+  \item Integridade (não é HMAC)
+  \item Proteção contra repetição
+  \item Criptografia (não é TLS)
+\end{itemize}
+\end{columns}
+\ideia{Deixamos essa diferença clara para ninguém sair achando que o indicador cheio significa segurança real.}
+\end{frame}
+
+\section{Resultados}
+
+\begin{frame}{Resultados}
+\begin{columns}[T]
+\column{0.5\textwidth}
+\begin{itemize}\small
+  \item \textbf{343} testes automatizados aprovados
+  \item \textbf{57} testes no navegador aprovados (1 pulado)
+  \item ESP32 real: \textbf{23 de 23} verificações
+  \item Bancada com motores: \textbf{17 de 18}, ajuste na perda de pacotes, depois \textbf{18 de 18}
+\end{itemize}
+\column{0.46\textwidth}
+\small
+\begin{tabular}{@{}lr@{}}
+\toprule
+\textbf{Teste na bancada} & \textbf{Parada} \\
+\midrule
+Soltar o joystick & 149~ms \\
+Link derrubado & 124~ms \\
+STOP ALL no sequestro & 102~ms \\
+\bottomrule
+\end{tabular}
+\end{columns}
+\ideia{O primeiro 17 de 18 foi útil: mostrou que a perda de pacotes sorteada um a um não parava o carrinho, e mudamos para perdas em rajadas.}
+\end{frame}
+
+\begin{frame}{Limitações e próximos passos}
+\begin{itemize}
+  \item Peças impressas, mas o carrinho ainda não foi montado nem testado no chão
+  \item Testes com fonte de bancada; as baterias ainda não foram usadas
+  \item Sem fusível e sem proteção da bateria (decisão da equipe)
+  \item Ajustar a polaridade de um motor e refazer a alimentação do ESP32
+  \item Rede aberta, sem TLS: só em laboratório isolado
+\end{itemize}
+\ideia{Fomos honestos no relatório: só dizemos que funcionou onde testamos de verdade.}
+\end{frame}
+
+\begin{frame}{Conclusão}
+\begin{itemize}
+  \item A IA acelera ataque e defesa: invasões, descoberta de falhas e provas de conceito em horas
+  \item As defesas básicas continuam decisivas: trocar senha padrão, atualizar rápido, desconfiar do que se instala
+  \item Equipamentos precisam falhar de forma segura
+  \item O HIJACK transforma essas ideias em algo que se vê
+\end{itemize}
+\ideia{E a IA também ajudou a construir este projeto, sob revisão da equipe.}
+\end{frame}
+
+\begin{frame}[standout]
+Obrigado!\\[0.5em]
+\normalsize Perguntas?
+\end{frame}
+
+\begin{frame}[allowframebreaks]{Referências}
+\tiny
+\begin{itemize}
+  \item ANTHROPIC. \emph{Disrupting the first reported AI-orchestrated cyber espionage campaign}. Nov. 2025.
+  \item SABIN, S. Chinese hackers used Anthropic's AI agent to automate spying. \emph{Axios}, 13 nov. 2025.
+  \item FAUSTINO, F. Hackers usaram IA da Anthropic em ciberataque global. \emph{Tecnoblog}, 14 nov. 2025.
+  \item HELP NET SECURITY. LiteLLM PyPI packages compromised in expanding TeamPCP supply chain attacks. 25 mar. 2026.
+  \item BLEEPINGCOMPUTER. LiteLLM release pipeline hacked to distribute info-stealer malware. 22 out. 2026.
+  \item WIZ RESEARCH. PHP2Shell: AI uncovers critical RCE vulnerabilities affecting 70\% of the Internet. 21 out. 2026.
+  \item ALURA. PHP2Shell: quando uma requisição basta para dominar um servidor. 30 out. 2026.
+  \item BLEEPINGCOMPUTER. GitLab warns of new max severity code execution vulnerability. 22 out. 2026.
+  \item NODE.JS. Wednesday, October 21, 2026 security releases. 21 out. 2026.
+  \item REUTERS. Binance: hackers used fake job interview before \$6.3 billion hack. \emph{NBC News}, 3 nov. 2026.
+  \item STARTSE. IA e entrevista de emprego falsa: o que está por trás do ataque à Binance. 4 nov. 2026.
+  \item AL JAZEERA. Very cold war: who's attacking Europe's supermarket freezers? 3 nov. 2026.
+  \item ANDRADE, B. Hackers sabotam freezers de supermercados na Europa. \emph{Tecnoblog}, 2 nov. 2026.
+  \item SBT NEWS. Porto de Santos confirma que sofreu ataque hacker. 10 nov. 2026.
+  \item NUNES, V. PF abre inquérito para investigar ataque hacker contra sistemas do Porto de Santos. \emph{CartaCapital}, 10 nov. 2026.
+  \item MADEIRA, L. Porto de Santos recupera 70\% dos backups após ataque hacker. \emph{Times Brasil}, 12 nov. 2026.
+  \item WIZ RESEARCH. CVE-2026-114938 OpenJDK RCE (Java4Shell): everything you need to know. 17 nov. 2026.
+  \item TENABLE. Java4Shell (CVE-2026-114938): frequently asked questions. 17 nov. 2026.
+\end{itemize}
+\textbf{Imagens}: Wikimedia Commons (autores e licenças indicados em cada slide); modelo 3D do carrinho elaborado pela equipe no Autodesk Fusion.
+\end{frame}
+
+\end{document}
