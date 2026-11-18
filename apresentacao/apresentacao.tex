@@ -72,86 +72,69 @@ Natal, novembro de 2026
 \end{columns}
 \end{frame}
 
-\begin{frame}{Os ataques saíram da tela}
+\begin{frame}{Por que cibersegurança importa}
 \begin{columns}[T]
-\column{0.48\textwidth}
-\centering
-\includegraphics[width=\linewidth,height=2.9cm,keepaspectratio]{imagens/freezer_supermercado.jpg}\\
-\credito{Foto ilustrativa: Alexis Jazz, CC BY 4.0, Wikimedia Commons}\\[4pt]
-\small \textbf{Supermercados na Europa} (out--nov/2026): freezers aquecidos remotamente a até 50~°C; especialistas apontam senhas fracas e falta de atualização
-\column{0.48\textwidth}
-\centering
-\includegraphics[width=\linewidth,height=2.9cm,keepaspectratio]{imagens/porto_santos.jpg}\\
-\credito{Foto: Claus Bunks (Afrobrasil), CC BY 3.0, Wikimedia Commons}\\[4pt]
-\small \textbf{Porto de Santos} (6/nov/2026): sistemas fora do ar; PF investiga; navios e cargas seguiram por meios alternativos
+\column{0.5\textwidth}
+\begin{itemize}
+  \item Quase tudo está conectado: geladeiras, portos, bancos, carros, hospitais
+  \item Uma falha não fica só no computador: vira comida estragada, serviço parado ou dinheiro roubado
+  \item A IA deixou ataques mais rápidos e baratos
+\end{itemize}
+\column{0.46\textwidth}
+\begin{itemize}
+  \item A maioria das invasões ainda começa no básico: senha padrão, sistema sem atualização, pessoa enganada
+  \item Segurança não é só da equipe de TI: quem projeta, programa e usa também decide
+\end{itemize}
 \end{columns}
-\ideia{Hoje um ataque não rouba só dados: ele estraga comida, atrasa um porto e mexe com equipamentos físicos.}
+\ideia{Para quem projeta circuitos e sistemas controlados, segurança é requisito de projeto, como alimentação ou estabilidade.}
 \end{frame}
 
-\begin{frame}{A IA mudou dos dois lados}
+\begin{frame}{Casos recentes: do digital ao físico}
 \begin{columns}[T]
-\column{0.6\textwidth}
-\textbf{No ataque}
-\small
-\begin{itemize}
-  \item GTG-1002 (2025): o Claude Code foi usado para atacar cerca de 30 organizações, fazendo de 80 a 90\% do trabalho
-  \item Binance (2026): os invasores usaram uma ferramenta interna de IA para avançar dentro da empresa
-\end{itemize}
-\textbf{Na defesa e na pesquisa}
-\begin{itemize}
-  \item PHP2Shell: falhas antigas do PHP encontradas com ajuda de IA
-  \item Java4Shell: prova de conceito criada com IA em cerca de 2~h
-\end{itemize}
-\column{0.36\textwidth}
+\column{0.32\textwidth}
 \centering
-\vspace{1cm}
-\includegraphics[width=0.9\linewidth]{imagens/logo_anthropic.png}\\
-\credito{Logo: Anthropic, domínio público}
+\includegraphics[width=\linewidth,height=2.3cm,keepaspectratio]{imagens/freezer_supermercado.jpg}\\
+\credito{Ilustrativa: Alexis Jazz, CC BY 4.0, Wikimedia Commons}\\[2pt]
+\footnotesize\textbf{Supermercados na Europa}\\out--nov/2026: freezers aquecidos a até 50~°C à distância
+\column{0.32\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=2.3cm,keepaspectratio]{imagens/porto_santos.jpg}\\
+\credito{Claus Bunks (Afrobrasil), CC BY 3.0, Wikimedia Commons}\\[2pt]
+\footnotesize\textbf{Porto de Santos}\\6/nov/2026: sistemas fora do ar; navios e cargas seguiram por meios alternativos
+\column{0.32\textwidth}
+\centering
+\includegraphics[width=\linewidth,height=2.3cm,keepaspectratio]{imagens/logo_binance.png}\\
+\credito{Logo: Binance, domínio público}\\[2pt]
+\footnotesize\textbf{Binance}\\29/out/2026: US\$~6,3 bi roubados; começou com uma entrevista de emprego falsa
 \end{columns}
-\ideia{A IA encurta o tempo entre descobrir uma falha e explorá-la. Quem defende também precisa ser mais rápido.}
+\ideia{Equipamento físico controlado pela rede, sistema que precisa operar sem rede e pessoas enganadas: os três aparecem no HIJACK.}
 \end{frame}
 
-\begin{frame}{Binance: US\$ 6,3 bilhões}
+\begin{frame}{A IA dos dois lados}
 \begin{columns}[c]
-\column{0.68\textwidth}
-\begin{tikzpicture}[node distance=0.35cm, every node/.style={font=\footnotesize}]
-\node[caixa, text width=6.6cm] (a) {\textbf{Jun}: funcionário instala ferramenta de programação adulterada};
-\node[caixa, text width=6.6cm, below=of a] (b) {\textbf{Set}: entrevista de emprego falsa; a \enquote{tarefa} trazia código malicioso};
-\node[caixa, text width=6.6cm, below=of b] (c) {\textbf{20/out}: com uma ferramenta interna de IA, chegam aos desenvolvedores das carteiras};
-\node[caixa, text width=6.6cm, below=of c, draw=vermelho, very thick] (d) {\textbf{29/out}: saque das carteiras quentes};
-\draw[seta] (a) -- (b); \draw[seta] (b) -- (c); \draw[seta] (c) -- (d);
-\end{tikzpicture}
-\column{0.28\textwidth}
-\centering
-\includegraphics[width=0.75\linewidth]{imagens/logo_binance.png}\\
-\credito{Logo: Binance, domínio público}\\[6pt]
-\small FBI atribui ao grupo norte-coreano TraderTraitor
-\end{columns}
-\ideia{O ataque começou em uma pessoa, não em um computador. Engenharia social continua sendo a porta de entrada.}
-\end{frame}
-
-\begin{frame}{Falhas em softwares do dia a dia}
-\begin{columns}[c]
-\column{0.62\textwidth}
+\column{0.64\textwidth}
+\footnotesize
+\textbf{\color{vermelho}No ataque}
 \begin{itemize}
-  \item \textbf{21/out}: três falhas graves no mesmo dia
-  \begin{itemize}
-    \item PHP2Shell: achada com IA e explorada antes da correção
-    \item GitLab: execução de código sem login
-    \item Node.js: falha relatada pela segurança do OpenAI Codex
-  \end{itemize}
-  \item \textbf{17/nov}: Java4Shell, no Java 17 em diante, em processadores com AVX-512
-  \item \textbf{LiteLLM}: pacote de IA publicado com ladrão de credenciais (mar e out/2026)
+  \item GTG-1002 (2025): o Claude Code atacou cerca de 30 organizações, fazendo de 80 a 90\% do trabalho
+  \item Binance: ferramenta interna de IA usada para chegar às carteiras
+  \item LiteLLM: pacote de IA adulterado roubando chaves (mar e out/2026)
 \end{itemize}
-\column{0.34\textwidth}
+\textbf{\color{verde}Na pesquisa e na defesa}
+\begin{itemize}
+  \item PHP2Shell (21/out): falhas antigas do PHP achadas com ajuda de IA
+  \item Node.js: falha relatada pela segurança do OpenAI Codex
+  \item Java4Shell (17/nov): prova de conceito criada com IA em cerca de 2~h
+\end{itemize}
+\column{0.32\textwidth}
 \centering
-\includegraphics[height=0.9cm]{imagens/logo_php.png}\hspace{4pt}
-\includegraphics[height=0.9cm]{imagens/logo_gitlab.png}\\[6pt]
-\includegraphics[height=0.9cm]{imagens/logo_nodejs.png}\hspace{4pt}
-\includegraphics[height=1.4cm]{imagens/java_duke.png}\\
+\includegraphics[width=0.85\linewidth]{imagens/logo_anthropic.png}\\[8pt]
+\includegraphics[height=0.75cm]{imagens/logo_php.png}\hspace{3pt}
+\includegraphics[height=0.75cm]{imagens/logo_nodejs.png}\hspace{3pt}
+\includegraphics[height=1.1cm]{imagens/java_duke.png}\\
 \credito{Logos e mascote: Wikimedia Commons (domínio público, MIT e BSD)}
 \end{columns}
-\ideia{Quase toda empresa usa algum desses. Atualizar rápido virou parte da segurança.}
+\ideia{A IA encurta o tempo entre achar uma falha e explorá-la: atualizar rápido virou segurança.}
 \end{frame}
 
 \begin{frame}{A proposta}
@@ -169,6 +152,16 @@ Natal, novembro de 2026
 \credito{Modelo 3D do carrinho, elaborado pela equipe (Autodesk Fusion)}
 \end{columns}
 \ideia{Ataque costuma ser invisível. Aqui ele aparece no carrinho e no telão.}
+\end{frame}
+
+\begin{frame}{Objetivos de Desenvolvimento Sustentável (ODS)}
+\centering
+\begin{tikzpicture}[node distance=0.4cm]
+\node[draw=none, fill={rgb,255:red,197;green,25;blue,45}, text=white, rounded corners, text width=3.85cm, minimum height=3.2cm, align=left, inner sep=6pt] (o4) {\textbf{\large ODS 4}\\\textbf{Educação de qualidade}\\[4pt]\footnotesize Meta 4.4: mais jovens e adultos com habilidades técnicas. O jogo ensina segurança na prática.};
+\node[draw=none, fill={rgb,255:red,253;green,105;blue,37}, text=white, rounded corners, text width=3.85cm, minimum height=3.2cm, align=left, inner sep=6pt, right=of o4] (o9) {\textbf{\large ODS 9}\\\textbf{Indústria, inovação e infraestrutura}\\[4pt]\footnotesize Meta 9.1: infraestrutura confiável e resiliente. Equipamentos conectados precisam falhar com segurança.};
+\node[draw=none, fill={rgb,255:red,0;green,104;blue,157}, text=white, rounded corners, text width=3.85cm, minimum height=3.2cm, align=left, inner sep=6pt, right=of o9] (o16) {\textbf{\large ODS 16}\\\textbf{Paz, justiça e instituições eficazes}\\[4pt]\footnotesize Meta 16.a: capacidade para prevenir e combater o crime, inclusive o digital.};
+\end{tikzpicture}
+\ideia{O HIJACK forma pessoas (ODS 4) para proteger infraestrutura (ODS 9) contra crimes que já acontecem (ODS 16).}
 \end{frame}
 
 \begin{frame}{Papéis e modalidades}
@@ -208,39 +201,23 @@ Natal, novembro de 2026
 \ideia{O público vê \enquote{comando alterado no caminho} quando o ataque funciona.}
 \end{frame}
 
-\begin{frame}{Os 12 ataques}
-\small
-\begin{tabularx}{\textwidth}{@{}p{2.3cm}L@{}}
+\begin{frame}{Ataques e defesas do jogo}
+\footnotesize
+\begin{tabularx}{\textwidth}{@{}p{2.1cm}L>{\raggedright\arraybackslash}p{4.4cm}@{}}
 \toprule
-\textbf{Grupo} & \textbf{Ataques e efeito} \\
+\textbf{Grupo} & \textbf{Ataques (12 no total)} & \textbf{Defesa} \\
 \midrule
-Sabotagem & Inverter frente/ré e esquerda/direita, viés e travamento da direção, atraso, perda de pacotes, replay \\
-Espionagem & Interceptar o tráfego; quebrar a senha com uma lista de senhas comuns \\
-Canal & Derrubar o link por 5~s; telemetria falsa (o defensor vê o carrinho obedecendo) \\
-Controle & \alert{Sequestro}: o atacante passa a dirigir o carrinho \\
+Sabotagem & Inverter frente/ré e esquerda/direita, viés e travamento da direção & Integridade (simulada) \\
+ & Replay: repete comandos antigos & Proteção contra repetição (simulada) \\
+ & Atraso e perda de pacotes & Nenhuma: o carrinho para sozinho \\
+Espionagem & Interceptar o tráfego & Criptografia (simulada) \\
+ & Quebrar a senha com lista de senhas comuns & \textbf{Trocar a senha padrão (real)} \\
+Canal & Derrubar o link por 5~s & Nenhuma: o carrinho para sozinho \\
+ & Telemetria falsa & Integridade (simulada) \\
+Controle & \alert{Sequestro}: o atacante dirige o carrinho & \textbf{Trocar a senha padrão (real)} \\
 \bottomrule
 \end{tabularx}
-\ideia{Todos são simulados no servidor: nenhuma rede real é invadida. Os textos de ajuda explicam o caso real sem ensinar a atacar.}
-\end{frame}
-
-\begin{frame}{As 4 defesas}
-\small
-\begin{tabularx}{\textwidth}{@{}p{3.3cm}p{1.8cm}L@{}}
-\toprule
-\textbf{Defesa} & \textbf{Tipo} & \textbf{O que bloqueia} \\
-\midrule
-Trocar a senha padrão & \textbf{Real} & Quebra de senha e sequestro \\
-Integridade & Simulada & Inversões, viés, travamento e telemetria falsa \\
-Proteção contra repetição & Simulada & Replay \\
-Criptografia & Simulada & Deixa ilegível o tráfego interceptado \\
-\bottomrule
-\end{tabularx}
-\vspace{0.3cm}
-\begin{itemize}
-  \item Atraso, perda e queda do link não têm defesa: o carrinho só para em segurança
-  \item Trocar a senha \alert{não} impede as inversões
-\end{itemize}
-\ideia{Senha protege contra quem não tem acesso. Não protege contra alteração no caminho.}
+\ideia{Trocar a senha não impede as inversões: ela barra quem não tem acesso, não a alteração no caminho.}
 \end{frame}
 
 \begin{frame}{Arquitetura}
