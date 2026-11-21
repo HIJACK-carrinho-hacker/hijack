@@ -23,6 +23,94 @@ git clone git@github.com:HIJACK-carrinho-hacker/hijack-esp32.git esp32
 
 Os nomes das pastas importam: a documentação de um projeto aponta para o outro como `../web` e `../esp32`.
 
+## Subir do zero numa máquina nova (dia da apresentação)
+
+Cenário: o celular do grupo faz o **hotspot** (roteador). O notebook que roda o servidor, o carrinho e o celular do piloto entram nessa mesma rede. O piloto abre no navegador o IP do notebook.
+
+### 1. Ligar o hotspot
+
+No celular, ative o roteador Wi-Fi em **2,4 GHz** (o ESP32 não enxerga 5 GHz). Android: Roteador Wi-Fi → Banda → 2,4 GHz. iPhone: Acesso Pessoal → ativar **Maximizar Compatibilidade**. Conecte o notebook nessa rede.
+
+### 2. Instalar Git e Bun
+
+Linux:
+
+```bash
+sudo pacman -S git            # Arch; no Ubuntu/Debian: sudo apt install git curl
+curl -fsSL https://bun.sh/install | bash
+exec $SHELL                   # recarrega o PATH para achar o bun
+bun --version
+```
+
+Windows (PowerShell):
+
+```powershell
+winget install Git.Git
+powershell -c "irm bun.sh/install.ps1 | iex"
+# feche e abra o PowerShell de novo
+bun --version
+```
+
+### 3. Baixar e configurar
+
+Igual no Linux e no Windows (no Windows, pelo PowerShell):
+
+```bash
+git clone https://github.com/HIJACK-carrinho-hacker/hijack.git
+cd hijack
+git clone https://github.com/HIJACK-carrinho-hacker/hijack-web.git web
+cd web
+bun install
+```
+
+Crie o `.env` do servidor:
+
+- Linux: `cp apps/server/.env.example apps/server/.env`
+- Windows: `Copy-Item apps\server\.env.example apps\server\.env`
+
+Edite `apps/server/.env` e preencha `ADMIN_SECRET` (senha do `/admin`, mínimo 8 caracteres) e `DEVICE_SECRET_CAR_A`. O `DEVICE_SECRET_CAR_A` tem de ser **o mesmo segredo que está gravado no carrinho**. O mais simples é copiar o `apps/server/.env` do notebook antigo (ele não vai para o git). Se não tiver o segredo antigo, escolha um novo e grave no carrinho pelo portal (passo 7).
+
+### 4. Rodar
+
+```bash
+bun run demo
+```
+
+O terminal mostra algo como `[hijack] na LAN: http://10.143.22.57:3000`. Deixe esse terminal aberto durante toda a apresentação.
+
+### 5. Descobrir o IP do notebook
+
+O servidor já imprime o IP (passo 4). Se aparecer mais de um, use o da placa Wi-Fi conectada ao hotspot. Para conferir:
+
+| Sistema | Comando | Onde olhar |
+|---|---|---|
+| Linux | `ip -4 -br addr` | linha da placa Wi-Fi (`wlan0`, `wlp…`), número antes da `/` |
+| Windows (PowerShell) | `Get-NetIPAddress -AddressFamily IPv4 -InterfaceAlias Wi-Fi` | campo `IPAddress` |
+| Windows (qualquer terminal) | `ipconfig` | bloco **Adaptador de Rede sem Fio Wi-Fi** → **Endereço IPv4** |
+
+Ignore `127.0.0.1` e endereços de Docker ou VPN. O IP costuma começar com `192.168.`, `10.` ou, no iPhone, `172.20.10.`.
+
+No celular do piloto (conectado ao hotspot, ou o próprio celular do hotspot), abra `http://<IP>:3000`. É `http`, não `https`. O operador abre `http://<IP>:3000/admin`.
+
+### 6. Liberar o firewall do notebook
+
+- Linux com UFW: `sudo ufw allow 3000/tcp`
+- Linux com firewalld: `sudo firewall-cmd --add-port=3000/tcp`
+- Windows: na primeira execução do `bun`, aceite o aviso do firewall marcando **Redes privadas e públicas**. Se o celular não abrir a página, rode no PowerShell como administrador: `New-NetFirewallRule -DisplayName HIJACK -Direction Inbound -Protocol TCP -LocalPort 3000 -Action Allow`
+
+### 7. Apontar o carrinho para o notebook
+
+O carrinho guarda a rede Wi-Fi, o IP do notebook e o segredo. Se a rede, o notebook ou o IP mudaram, reconfigure:
+
+1. Ligue o carrinho e segure o botão **BOOT** do ESP32 por 3 s.
+2. No celular, entre na rede `HIJACK-car-a` (senha `hijack-config`, se não foi trocada). Se a página não abrir sozinha, acesse `http://192.168.4.1`.
+3. Em **Configure WiFi**, escolha o hotspot, digite a senha dele e preencha: IP do notebook (passo 5), porta `3000`, carrinho `car-a` e o mesmo `DEVICE_SECRET_CAR_A` do `.env`. Toque em **Save**.
+4. No `/admin`, troque o Carrinho A para **Hardware** (fora de "Em demonstração"). O cartão deve mostrar **online**.
+
+O IP do notebook no hotspot pode mudar quando ele se desconecta e volta. Antes de começar, rode o comando do passo 5 de novo. Se o IP mudou, refaça este passo.
+
+Mais detalhes sobre o portal em `esp32/README.md`, seção 5. Para regravar o firmware também é preciso clonar o `hijack-esp32` em `esp32/` e instalar o PlatformIO (`esp32/README.md`).
+
 ## Rodar só a simulação (sem carrinhos)
 
 ```bash
