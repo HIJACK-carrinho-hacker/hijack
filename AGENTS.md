@@ -18,6 +18,8 @@ Em 17/11/2026 foi escrito o **relatório final** em `relatorio/` (LaTeX `abntex2
 
 Em 18/11/2026 foram feitos os **slides da apresentação** em `apresentacao/` (Beamer metropolis, 16:9, 19 páginas para 15 minutos): capa própria com integrantes, importância da cibersegurança, casos condensados, ODS 4, 9 e 16, o jogo, funcionamento, resultados e conclusão, cada quadro com pouco texto e uma caixa "ideia" no rodapé para guiar a fala. Imagens externas só do Wikimedia Commons, com autor e licença no slide; o Commons limita downloads seguidos (HTTP 429), e `Special:FilePath/<arquivo>?width=500` funcionou quando as miniaturas falharam. Cópia em `~/Downloads/HIJACK - Apresentação.pdf`.
 
+Em 20/11/2026, a pedido do usuário, o analógico (piloto e sequestro) passou a manter o sentido da tração quando vai todo para o lado com o carrinho andando (antes o motor desligava e o carrinho parava). Só a tela mudou (commit `bbcfaea` do `hijack-web`, decisão em `web/docs/assumptions.md` seção 9); não testado no chão.
+
 Guia de uso para pessoas: `README.md` (raiz), `web/README.md`, `esp32/README.md`. Roteiro didático: `web/docs/demo-script.md`.
 
 Regras gerais:
