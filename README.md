@@ -63,12 +63,7 @@ cd web
 bun install
 ```
 
-Crie o `.env` do servidor:
-
-- Linux: `cp apps/server/.env.example apps/server/.env`
-- Windows: `Copy-Item apps\server\.env.example apps\server\.env`
-
-Edite `apps/server/.env` e preencha `ADMIN_SECRET` (senha do `/admin`, mínimo 8 caracteres) e `DEVICE_SECRET_CAR_A`. O `DEVICE_SECRET_CAR_A` tem de ser **o mesmo segredo que está gravado no carrinho**. O mais simples é copiar o `apps/server/.env` do notebook antigo (ele não vai para o git). Se não tiver o segredo antigo, escolha um novo e grave no carrinho pelo portal (passo 7).
+O `apps/server/.env` já vem no clone (o `hijack-web` é privado), com a senha do `/admin` (`ADMIN_SECRET`) e o mesmo `DEVICE_SECRET_CAR_A` gravado no carrinho. Não precisa criar nem editar nada. Se trocar o `DEVICE_SECRET_CAR_A`, grave o novo no carrinho pelo portal (passo 7).
 
 ### 4. Rodar
 
@@ -122,7 +117,6 @@ Mais detalhes sobre o portal em `esp32/README.md`, seção 5. Para regravar o fi
 ```bash
 cd web
 bun install
-cp apps/server/.env.example apps/server/.env   # troque os segredos
 bun run demo
 ```
 
