@@ -351,6 +351,8 @@ A estrutura foi projetada em CAD (Autodesk Fusion) e impressa em 3D. A base mede
 
 O formato é o de um carro de verdade: tração nas rodas de trás e direção nas da frente. Ele não vira girando as rodas de um lado mais rápido que as do outro.
 
+Com as peças impressas, o carrinho foi montado. A Figura~\ref{fig:montado} mostra o carrinho real, com o ESP32 na placa de expansão, a L298N, o regulador, os motores TT e as rodas.
+
 \begin{figure}[htbp]
 \centering
 \caption{Modelo 3D do carrinho HIJACK}
@@ -383,6 +385,14 @@ O formato é o de um carro de verdade: tração nas rodas de trás e direção n
 {\footnotesize (b) mecanismo de direção: servo SG90, alavanca, barras e mangas de eixo}
 \end{minipage}
 \fonte{Modelo 3D elaborado pelos autores no Autodesk Fusion (2026).}
+\end{figure}
+
+\begin{figure}[htbp]
+\centering
+\caption{Carrinho HIJACK montado}
+\label{fig:montado}
+\includegraphics[width=0.5\textwidth]{figuras/carrinho_montado.jpg}
+\fonte{Fotografia dos autores (2026).}
 \end{figure}
 
 \section{Alimentação}
@@ -550,22 +560,22 @@ Sequestro & Comandos do piloto recusados; o atacante dirigiu; STOP ALL parou em 
 \section{Limitações}
 
 \begin{itemize}
-  \item O carrinho ainda não foi testado montado no chassi nem andando no chão; os testes físicos foram feitos com motores e servo soltos sobre a bancada.
+  \item O carrinho já foi montado (Figura~\ref{fig:montado}), mas ainda não foi testado andando no chão; os testes físicos descritos aqui foram feitos com motores e servo soltos sobre a bancada.
   \item As baterias ainda não foram usadas: os testes com motores usaram uma fonte de bancada de 8,4~V com limite de corrente de 3~A.
   \item Por decisão da equipe, não há fusível nem circuito de proteção das baterias (BMS); cada célula precisa ser medida antes e depois do uso.
   \item O capacitor de 470~\textmu F previsto junto ao servo ainda não foi instalado.
-  \item Na bancada, os dois motores giraram no mesmo sentido físico; montados espelhados no chassi, o carrinho giraria no lugar. A polaridade de um deles precisa ser corrigida na montagem.
+  \item Na bancada, os dois motores giraram no mesmo sentido físico; montados espelhados no chassi, o carrinho giraria no lugar. A polaridade de um deles precisa ser conferida no carrinho montado.
   \item A alimentação do ESP32 apresentou queda de cerca de 0,5~V por contatos de protoboard e será refeita com fios curtos e grossos.
   \item A rede é aberta (sem TLS), aceitável apenas no laboratório isolado.
 \end{itemize}
 
 \chapter{Conclusão}
 
-Em simulação, no ESP32 real e na bancada, o sistema demonstrou todos os ataques e defesas previstos; a demonstração com o carrinho montado no chão ainda depende da montagem do chassi. A proposta é tornar visível algo que normalmente é invisível. Quando o carrinho vira para o lado errado ou é sequestrado porque a senha era \texttt{1234}, o público entende na prática o risco de equipamentos conectados com senhas fracas, como os refrigeradores atacados na Europa; quando o carrinho para sozinho porque a rede caiu, entende por que sistemas críticos precisam de um modo seguro de operação quando a rede falha, como o Porto de Santos, que manteve navios e acessos funcionando por meios alternativos.
+Em simulação, no ESP32 real e na bancada, o sistema demonstrou todos os ataques e defesas previstos; o carrinho já foi montado, mas a demonstração com ele andando no chão ainda depende dos testes no chão. A proposta é tornar visível algo que normalmente é invisível. Quando o carrinho vira para o lado errado ou é sequestrado porque a senha era \texttt{1234}, o público entende na prática o risco de equipamentos conectados com senhas fracas, como os refrigeradores atacados na Europa; quando o carrinho para sozinho porque a rede caiu, entende por que sistemas críticos precisam de um modo seguro de operação quando a rede falha, como o Porto de Santos, que manteve navios e acessos funcionando por meios alternativos.
 
 Os casos de 2025 e 2026 mostram que a IA acelerou os dois lados: ela orquestrou invasões (GTG-1002), ajudou a achar falhas que estavam escondidas havia anos no PHP (PHP2Shell), gerou em cerca de duas horas uma prova de conceito para uma falha no Java (Java4Shell) e foi usada para avançar dentro de uma empresa (Binance), mas também foi usada para construir este projeto. As defesas básicas continuam decisivas: trocar senhas padrão, atualizar sistemas rapidamente, verificar a integridade do que se instala e projetar equipamentos para falhar de forma segura.
 
-Como próximos passos ficam a montagem no chassi, os testes no chão e no local da apresentação, e a avaliação de novas defesas.
+Como próximos passos ficam os testes do carrinho montado no chão e no local da apresentação, e a avaliação de novas defesas.
 
 \postextual
 
