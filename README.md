@@ -63,7 +63,7 @@ cd web
 bun install
 ```
 
-O `apps/server/.env` já vem no clone (o `hijack-web` é privado), com a senha do `/admin` (`ADMIN_SECRET`) e o mesmo `DEVICE_SECRET_CAR_A` gravado no carrinho. Não precisa criar nem editar nada. Se trocar o `DEVICE_SECRET_CAR_A`, grave o novo no carrinho pelo portal (passo 7).
+O `apps/server/.env` já vem no clone, com a senha do `/admin` (`ADMIN_SECRET`) e o mesmo `DEVICE_SECRET_CAR_A` gravado no carrinho. Não precisa criar nem editar nada. Se trocar o `DEVICE_SECRET_CAR_A`, grave o novo no carrinho pelo portal (passo 7).
 
 ### 4. Rodar
 
