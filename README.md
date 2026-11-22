@@ -80,7 +80,13 @@ O terminal mostra algo como `[hijack] na LAN: http://10.143.22.57:3000`. Deixe e
 
 ### 5. Descobrir o IP do notebook
 
-O servidor já imprime o IP (passo 4). Se aparecer mais de um, use o da placa Wi-Fi conectada ao hotspot. Para conferir:
+O servidor já imprime o IP (passo 4). O jeito mais fácil é rodar, em outro terminal dentro de `web/`:
+
+```bash
+bun run ip
+```
+
+Ele mostra o IP da placa Wi-Fi primeiro, já com os endereços do piloto, do `/admin` e o que digitar no portal do carrinho (funciona no Linux, no Windows e no macOS). Se aparecer mais de uma placa, use a conectada ao hotspot. Para conferir sem o Bun:
 
 | Sistema | Comando | Onde olhar |
 |---|---|---|
